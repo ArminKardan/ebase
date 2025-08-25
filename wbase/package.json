@@ -1,0 +1,32 @@
+{
+  "name": "ebase-wbase",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx esbuild \"*.ts\" \"libs/**/*.ts\" --outdir=./ --platform=node --target=node23 --format=cjs --bundle=false --allow-overwrite  && node ./libs/sync.js && node ./run.js",
+    "buildlinux": "npx esbuild \"*.ts\" \"libs/**/*.ts\"  --outdir=./ --platform=node --target=node23 --format=cjs --bundle=false --allow-overwrite",
+    "startlinux": "node ./libs/sync.js && node ./run.js"
+  },
+  "dependencies": {
+    "@types/figlet": "^1.5.8",
+    "@types/node": "^22.6.1",
+    "@types/ws": "^8.5.12",
+    "@xmpp/client": "^0.13.3",
+    "dotenv": "^16.4.7",
+    "figlet": "^1.7.0",
+    "googleapis": "^144.0.0",
+    "kleur": "^4.1.5",
+    "mongodb": "^6.9.0",
+    "nodemailer": "^6.9.15",
+    "open": "^10.1.0",
+    "puppeteer-core": "^24.3.1",
+    "rage-edit": "^1.2.0",
+    "streamifier": "^0.1.1",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.7.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  }
+}

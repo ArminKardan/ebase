@@ -1,0 +1,874 @@
+:root {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: white;
+    color: black;
+  }
+}
+
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: Segoe UI, vr, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    font-size: 12px;
+  background-image: url("/bg2.webp");
+  background-size: auto;
+  scroll-behavior: smooth;
+  background-position: center top;
+}
+
+
+h1 {
+  font-size: 13px;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+h1-u {
+  font-size: 13px;
+  line-height: 1;
+  margin: 0;
+}
+
+h2 {
+  font-size: 11px;
+  line-height: 1;
+  margin: 0;
+}
+
+h2-u {
+  font-size: 11px;
+  line-height: 0.0;
+  margin: 0;
+}
+
+h3 {
+  font-size: 10px;
+  margin: 0;
+}
+
+h3-u {
+  font-size: 10px;
+  margin: 0;
+}
+
+
+img[alt] {
+  font-size: 3px;
+}
+
+@font-face {
+  font-family: br;
+  src: url("https://cdn.ituring.ir/qepal/fonts/br.woff2");
+}
+
+@font-face {
+  font-family: bm;
+  src: url("https://cdn.ituring.ir/qepal/bm.woff2");
+}
+
+@font-face {
+  font-family: bb;
+  src: url("https://cdn.ituring.ir/qepal/fonts/bb.woff2");
+}
+
+@font-face {
+  font-family: zh;
+  src: url("https://cdn.ituring.ir/qepal/fonts/zh.otf");
+}
+
+@font-face {
+  font-family: ko;
+  src: url("https://cdn.ituring.ir/qepal/fonts/ko.otf");
+}
+
+@font-face {
+  font-family: vr;
+  src: url("https://cdn.ituring.ir/qepal/fonts/vz.woff");
+}
+
+@font-face {
+  font-family: vz;
+  src: url("https://cdn.ituring.ir/qepal/fonts/vz.woff");
+}
+
+@font-face {
+  font-family: vrb;
+  src: url("https://cdn.ituring.ir/qepal/fonts/vrb.woff");
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+textarea {
+  border: #aaa 1px solid;
+}
+
+textarea:focus {
+  /* border: #000 1px solid; */
+  overflow: auto;
+  outline: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+b-400,
+b-300,
+b-200,
+b-150,
+b-100,
+b-50,
+b-30 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ddd;
+  border-radius: 5px;
+  height: 30px;
+  cursor: pointer;
+  flex: 1;
+}
+
+b-400,
+b-300,
+b-200,
+b-150,
+b-100,
+b-50,
+b-30:hover {
+  filter: saturate(180%)
+}
+
+b-400,
+b-300,
+b-200,
+b-150,
+b-100,
+b-50,
+b-30:active {
+  filter: saturate(80%)
+}
+
+b-500 {
+  min-width: 500px;
+}
+
+b-400 {
+  min-width: 400px;
+}
+
+b-300 {
+  min-width: 300px;
+}
+
+b-200 {
+  min-width: 200px;
+}
+
+b-150 {
+  min-width: 150px;
+}
+
+b-100 {
+  min-width: 100px;
+}
+
+b-50 {
+  min-width: 50px;
+}
+
+b-30 {
+  min-width: 30px;
+}
+
+
+/* 
+  align items (always single character) / cross-axis:
+  x: stretch , 
+  c: center,
+  s: start, 
+  e: end,
+
+  justify-content (1 or 2 characters at the end) / main-axis
+  c: center,
+  s: start, 
+  e: end,
+  sa: space-around
+  se: space-evenly
+  sb: space-between
+*/
+
+
+
+f-x,
+f-xs,
+f-xe,
+f-xc,
+f-xsb,
+f-xse,
+f-xsa,
+w-x,
+w-xs,
+w-xe,
+w-xc,
+w-xsb,
+w-xse,
+w-xsa,
+c-x,
+c-xs,
+c-xe,
+c-xc,
+c-xsb,
+c-xse,
+c-xsa {
+  align-items: stretch;
+}
+
+
+f-s,
+f-ss,
+f-se,
+f-sc,
+f-ssb,
+f-sse,
+f-ssa,
+w-s,
+w-ss,
+w-se,
+w-sc,
+w-ssb,
+w-sse,
+w-ssa,
+c-s,
+c-ss,
+c-se,
+c-sc,
+c-ssb,
+c-sse,
+c-ssa {
+  align-items: flex-start;
+}
+
+
+f-e,
+f-es,
+f-ee,
+f-ec,
+f-esb,
+f-ese,
+f-esa,
+w-e,
+w-es,
+w-ee,
+w-ec,
+w-esb,
+w-ese,
+w-esa,
+c-e,
+c-es,
+c-ee,
+c-ec,
+c-esb,
+c-ese,
+c-esa {
+  align-items: flex-end;
+}
+
+
+f-c,
+f-cs,
+f-ce,
+f-cc,
+f-csb,
+f-cse,
+f-csa,
+w-c,
+w-cs,
+w-ce,
+w-cc,
+w-csb,
+w-cse,
+w-csa,
+c-c,
+c-cs,
+c-ce,
+c-cc,
+c-csb,
+c-cse,
+c-csa {
+  align-items: center;
+}
+
+
+f-xs,
+f-cs,
+f-ss,
+f-es,
+w-xs,
+w-cs,
+w-ss,
+w-es,
+c-xs,
+c-cs,
+c-ss,
+c-es {
+  justify-content: flex-start;
+}
+
+
+f-xe,
+f-ce,
+f-se,
+f-ee,
+w-xe,
+w-ce,
+w-se,
+w-ee,
+c-xe,
+c-ce,
+c-se,
+c-ee {
+  justify-content: flex-end;
+}
+
+
+f-xc,
+f-cc,
+f-sc,
+f-ec,
+w-xc,
+w-cc,
+w-sc,
+w-ec,
+c-xc,
+c-cc,
+c-sc,
+c-ec {
+  justify-content: center;
+}
+
+
+f-xsa,
+f-csa,
+f-ssa,
+f-esa,
+w-xsa,
+w-csa,
+w-ssa,
+w-esa,
+c-xsa,
+c-csa,
+c-ssa,
+c-esa {
+  justify-content: space-around;
+}
+
+
+f-xsb,
+f-csb,
+f-ssb,
+f-esb,
+w-xsb,
+w-csb,
+w-ssb,
+w-esb,
+c-xsb,
+c-csb,
+c-ssb,
+c-esb {
+  justify-content: space-between;
+}
+
+
+f-xse,
+f-cse,
+f-sse,
+f-ese,
+w-xse,
+w-cse,
+w-sse,
+w-ese,
+c-xse,
+c-cse,
+c-sse,
+c-ese {
+  justify-content: space-evenly;
+}
+
+
+
+f-x,
+f-xs,
+f-xe,
+f-xc,
+f-xsb,
+f-xse,
+f-xsa,
+
+f-c,
+f-cs,
+f-ce,
+f-cc,
+f-csb,
+f-cse,
+f-csa,
+
+f-s,
+f-ss,
+f-se,
+f-sc,
+f-ssb,
+f-sse,
+f-ssa,
+
+f-e,
+f-es,
+f-ee,
+f-ec,
+f-esb,
+f-ese,
+f-esa,
+
+w-x,
+w-xs,
+w-xe,
+w-xc,
+w-xsb,
+w-xse,
+w-xsa,
+
+w-c,
+w-cs,
+w-ce,
+w-cc,
+w-csb,
+w-cse,
+w-csa,
+
+w-s,
+w-ss,
+w-se,
+w-sc,
+w-ssb,
+w-sse,
+w-ssa,
+
+w-e,
+w-es,
+w-ee,
+w-ec,
+w-esb,
+w-ese,
+w-esa,
+
+c-x,
+c-xs,
+c-xe,
+c-xc,
+c-xsb,
+c-xse,
+c-xsa,
+
+c-c,
+c-cs,
+c-ce,
+c-cc,
+c-csb,
+c-cse,
+c-csa,
+
+c-s,
+c-ss,
+c-se,
+c-sc,
+c-ssb,
+c-sse,
+c-ssa,
+
+c-e,
+c-es,
+c-ee,
+c-ec,
+c-esb,
+c-ese,
+c-esa {
+  display: flex
+}
+
+c-x,
+c-xs,
+c-xe,
+c-xc,
+c-xsb,
+c-xse,
+c-xsa,
+
+c-c,
+c-cs,
+c-ce,
+c-cc,
+c-csb,
+c-cse,
+c-csa,
+
+c-s,
+c-ss,
+c-se,
+c-sc,
+c-ssb,
+c-sse,
+c-ssa,
+
+c-e,
+c-es,
+c-ee,
+c-ec,
+c-esb,
+c-ese,
+c-esa {
+  flex-direction: column;
+}
+
+w-x,
+w-xs,
+w-xe,
+w-xc,
+w-xsb,
+w-xse,
+w-xsa,
+
+w-c,
+w-cs,
+w-ce,
+w-cc,
+w-csb,
+w-cse,
+w-csa,
+
+w-s,
+w-ss,
+w-se,
+w-sc,
+w-ssb,
+w-sse,
+w-ssa,
+
+w-e,
+w-es,
+w-ee,
+w-ec,
+w-esb,
+w-ese,
+w-esa {
+  flex-wrap: wrap;
+}
+
+
+
+
+
+f-5,
+f-6,
+f-7,
+f-8,
+f-9,
+f-10,
+f-11,
+f-12,
+f-13,
+f-14,
+f-15,
+f-16,
+f-17,
+f-18,
+f-19,
+f-20,
+f-21,
+f-22,
+f-23,
+f-24,
+f-25,
+f-26,
+f-27,
+f-28,
+f-29,
+f-30,
+f-31,
+f-32,
+f-33,
+f-34,
+f-35,
+f-36,
+f-37,
+f-38,
+f-39,
+f-40 {
+  display: inline-block;
+  text-align: justify;
+  word-spacing: -0.5px;
+  margin-block-start: 0px;
+  margin: 0;
+  padding: 0;
+}
+
+input:focus {
+  outline: none;
+}
+
+f-5 {
+  font-size: 5px;
+}
+
+f-6 {
+  font-size: 6px;
+}
+
+f-7 {
+  font-size: 7px;
+}
+
+f-8 {
+  font-size: 8px;
+}
+
+f-9 {
+  font-size: 9px;
+}
+
+f-10 {
+  font-size: 10px;
+}
+
+f-11 {
+  font-size: 11px;
+}
+
+f-12 {
+  font-size: 12px;
+}
+
+f-13 {
+  font-size: 13px;
+}
+
+f-14 {
+  font-size: 14px;
+}
+
+f-15 {
+  font-size: 15px;
+}
+
+f-16 {
+  font-size: 16px;
+}
+
+f-17 {
+  font-size: 17px;
+}
+
+f-18 {
+  font-size: 18px;
+}
+
+f-19 {
+  font-size: 19px;
+}
+
+f-20 {
+  font-size: 20px;
+}
+
+f-21 {
+  font-size: 21px;
+}
+
+f-22 {
+  font-size: 22px;
+}
+
+f-23 {
+  font-size: 23px;
+}
+
+f-24 {
+  font-size: 24px;
+}
+
+f-25 {
+  font-size: 25px;
+}
+
+f-26 {
+  font-size: 26px;
+}
+
+f-27 {
+  font-size: 27px;
+}
+
+f-28 {
+  font-size: 28px;
+}
+
+f-29 {
+  font-size: 29px;
+}
+
+f-30 {
+  font-size: 30px;
+}
+
+f-31 {
+  font-size: 31px;
+}
+
+f-32 {
+  font-size: 32px;
+}
+
+f-33 {
+  font-size: 33px;
+}
+
+f-34 {
+  font-size: 34px;
+}
+
+f-35 {
+  font-size: 35px;
+}
+
+f-36 {
+  font-size: 36px;
+}
+
+f-37 {
+  font-size: 37px;
+}
+
+f-38 {
+  font-size: 38px;
+}
+
+f-39 {
+  font-size: 39px;
+}
+
+f-40 {
+  font-size: 40px;
+}
+
+
+br-x,
+br-1 {
+  display: block;
+  height: 0.5rem;
+}
+
+br-xx,
+br-2 {
+  display: block;
+  height: 0.25rem;
+}
+
+br-xxx,
+br-3 {
+  display: block;
+  height: 0.15rem;
+}
+
+br-xxxx,
+br-4 {
+  display: block;
+  height: 0.05rem;
+}
+
+sp-x,
+sp-1 {
+  display: inline;
+  margin: 0 10px;
+}
+
+sp-xx,
+sp-2 {
+  display: inline;
+  margin: 0 5px;
+}
+
+sp-xxxx,
+sp-3 {
+  display: inline;
+  margin: 0 3px;
+}
+
+sp-xxxx,
+sp-4 {
+  display: inline;
+  margin: 0 1px;
+}
+
+
+p {
+  text-align: justify;
+  word-spacing: -0.5px;
+  margin-block-start: 0px;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.7;
+  padding: 0;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+* {
+  font-weight: normal;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  margin: 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+video::-webkit-media-controls-timeline {
+  filter: brightness(150%);
+  padding-bottom: 0;
+  margin-bottom: 5px;
+  width: calc(100% - 30px);
+  opacity: 0.8;
+}
+
+video::-webkit-media-controls {
+  visibility: hidden;
+}
+
+video::-webkit-media-controls-enclosure {
+  visibility: visible;
+}
+
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-current-time-display {
+  display: none;
+}

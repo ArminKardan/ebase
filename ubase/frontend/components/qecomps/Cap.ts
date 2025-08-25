@@ -1,0 +1,12 @@
+export default (txt: string): string => {
+    if (!txt) return ""
+    return txt.charAt(0).toUpperCase() + txt.slice(1);
+}
+
+
+export function FAtoENRatio(inputString) {
+    inputString = inputString.replace(/ /g, "")
+    let persianCount = (inputString.match(/[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF\u200C]/g) || []).length;
+    let englishCount = inputString.length;
+    return englishCount ? persianCount / englishCount : 1;
+  }
