@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-
     "target": "es2022",
     "allowJs": true,
     "skipLibCheck": true,
@@ -34,8 +33,9 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-    }
+      ]
+    },
+    "types": []
   },
   "include": [
     "global.d.ts",
@@ -50,4 +50,4 @@
   "exclude": [
     "node_modules"
   ]
-} 
+}

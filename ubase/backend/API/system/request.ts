@@ -1,5 +1,5 @@
 type T = Parameters<typeof F>[0]; type R = ReturnType<typeof F>
-declare global { interface API { "request": (T: T) => R } var API: API }
+declare global { interface API { "system/request": (T: T) => R } var API: API }
 
 
 export default async function F(T: {url:string, headers:{[key in string]:string}, country:"DE"}, C: APISession,) {

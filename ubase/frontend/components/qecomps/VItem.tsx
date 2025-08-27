@@ -16,7 +16,8 @@ export default (props: {
   w?: number,
   s?: number,
   s2?: number,
-  on?: () => void,
+  on?: (e:any) => void,
+  onright?: (e:any) => void,
   bold?: boolean,
   ml?: number,
   txtmt?: number,
@@ -32,7 +33,7 @@ export default (props: {
       backgroundColor: props.selected ? "#d1af85" : null, width:props.style?.transform?80:100,
       ...props.style, paddingTop: props.pt || (props.h ? (50 - props.h) : null),
       //  paddingTop:props.h?(50 - props.h):null 
-    }} onClick={() => props.on?.()}>
+    }} onClick={(e) => props.on?.(e)} onContextMenu={(e)=>{e.preventDefault(); props.onright?.(e)}}>
     <f-cc style={{position:"relative"}}>
 
       {image2 ? <Img src={image2}

@@ -106,6 +106,9 @@ const convertor = (props: any, Page: PageEl, isPage: boolean, z: ZType, ssr) => 
         Parent = ComponentSSR
     }
 
+    if (!z.qestyles) {
+        return null
+    }
     return <Parent>
         {isPage && props.title ? <Head>
             <title>{props.title}</title>

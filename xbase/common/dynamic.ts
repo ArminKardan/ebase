@@ -21,11 +21,8 @@ declare global {
                 Promise<string>,
 
             sms: {
-                confirm: (phone: string, code: string) => Promise<{ code: number, msg: string }>,
+                confirm: (phone: string, code: string) => Promise<{code:number, msg:string}>,
                 modem: (phone, text) => Promise<any>
-            },
-            email: {
-                send: (to: string, subject: string, message) => Promise<{ code: number, msg: string }>,
             },
             poster: {
                 make: (specs: {
@@ -92,7 +89,7 @@ export const Loopez = () => {
                     subtext: specs.subtext,
                     technologies,
                     lang: "fa",
-                }, resource: "default", onlyowner: true
+                }, onlyowner: true
             })
 
             return json
@@ -104,7 +101,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "translate-" + specs.engine, body: {
                     source: specs.from, target: specs.to, text: specs.text
-                }, resource: "default", onlyowner: true
+                }, onlyowner: true
             })
             if (json.status == 200) {
                 return json.result
@@ -119,7 +116,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "translate-" + specs.engine, body: {
                     source: specs.from, target: specs.to, text: specs.text
-                }, resource: "default", onlyowner: true
+                },  onlyowner: true
             })
             if (json.status == 200) {
                 return json.result
@@ -133,7 +130,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "gpt35", body: {
                     prompts: specs.prompts,
-                }, resource: "default", onlyowner: true
+                }, onlyowner: true
             })
             if (json.status == 200) {
                 return json.result[0]
@@ -148,7 +145,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "gpt4o", body: {
                     prompts: specs.prompts,
-                }, resource: "default", onlyowner: true
+                }, onlyowner: true
             })
             if (json.status == 200) {
                 return json.result[0]
@@ -157,24 +154,14 @@ export const Loopez = () => {
         }
     }
 
-    if (!global.nexus.agent.email) {
-        global.nexus.agent.email = {} as any
-        global.nexus.agent.email.send = async (to, subject, message) => {
-            let json = await nexus.api({
-                app: "eagents", cmd: "email-send", body: {
-                    to, subject, message
-                }, resource: "default", onlyowner: true
-            })
-            return json
-        }
-    }
+
     if (!global.nexus.agent.sms) {
         global.nexus.agent.sms = {} as any
         global.nexus.agent.sms.confirm = async (phone, code) => {
             let json = await nexus.api({
                 app: "eagents", cmd: "sms-confirm", body: {
                     phone, code
-                }, resource: "default", onlyowner: true
+                }, onlyowner: true
             })
 
             return json
@@ -184,7 +171,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "esms", cmd: "send", body: {
                     phone, text
-                }, resource: "default", onlyowner: true
+                }, onlyowner: true
             })
 
             return json
@@ -196,7 +183,7 @@ export const Loopez = () => {
         global.nexus.agent.ssh = {
             ping: async () => {
                 let json = await nexus.api({
-                    app: "essh", cmd: "ping", resource: "default", onlyowner: true
+                    app: "essh", cmd: "ping", onlyowner: true
                 })
                 return json;
             },
@@ -210,7 +197,7 @@ export const Loopez = () => {
                         password: specs.password,
                         salt: specs.salt,
                         timeout: specs.timeout || 300,
-                    }, resource: "default", onlyowner: true
+                    }, onlyowner: true
                 })
                 return json
             },
@@ -219,7 +206,7 @@ export const Loopez = () => {
                     app: "essh", cmd: "disconnect",
                     body: {
                         channelid: specs.channelid,
-                    }, resource: "default", onlyowner: true
+                    },  onlyowner: true
                 })
                 return json;
             },
@@ -229,7 +216,7 @@ export const Loopez = () => {
                     body: {
                         channelid: specs.channelid,
                         command: specs.input
-                    }, resource: "default", onlyowner: true
+                    }, onlyowner: true
                 })
                 return json
             },

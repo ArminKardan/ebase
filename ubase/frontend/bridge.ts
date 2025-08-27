@@ -5,22 +5,40 @@ declare global {
         send: (data: any) => Promise<any>
     }
 
+    type NexusReceiveType = {
+        fromjid: string,
+        app: string,
+        uid: string,
+        resource: string,
+        role: "owner" | "partner" | "user",
+        body: string,
+        itsme: boolean,
+        itsbro: boolean,
+        channel: string
+    }
+
+    type NexusOnReceiveType = {
+        fromjid: string,
+        app: string,
+        uid: string,
+        resource: string,
+        role: "owner" | "partner" | "user",
+        body: { [key: string]: any },
+        itsme: boolean,
+        itsbro: boolean,
+    }
+
     interface NX {
         subscribe: (channel: string) => void,
         unsubscribe: (channel: string) => void,
         channels: Set<string>,
-        msgreceiver: (specs: {
-            fromjid: string,
-            app: string,
-            uid: string,
-            resource: string,
-            role: "owner" | "partner" | "user",
-            body: string,
-            itsme: boolean,
-            itsbro: boolean,
-            channel: string
-        }) => void,
+        msgreceiver: (specs: NexusReceiveType) => void,
         connected: boolean,
+        on: {
+            direct: (cb: (specs: NexusOnReceiveType) => Promise<any>) => string,
+            channel: (channelname: string, cb: (specs: NexusOnReceiveType) => Promise<any>) => string,
+        },
+        clearon: (cbid: string) => void,
         api: (specs: {
             app: string,
             cmd: string,
@@ -40,7 +58,7 @@ declare global {
             resource?: string,
             prioritize_mine?: boolean
             jid?: string,
-        }) => Promise<void>,
+        }) => Promise<any>,
         sendtojid: (jid: string, body: string) => Promise<any>,
         sendtochannel: (channel: string, body: string) => Promise<any>,
 

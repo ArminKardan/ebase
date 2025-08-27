@@ -47,6 +47,10 @@ export default function App({ Component, pageProps }) {
     }
   } catch { }
 
+  if (props.session.code) {
+    return null
+  }
+
   let z = SSRGlobal(props.pageid)
 
   z.root = "/" + props.langcode;
@@ -75,7 +79,7 @@ export default function App({ Component, pageProps }) {
     APILister(props)
 
     let lng = localStorage.getItem("lang-" + props.langcode);
-    if (lng && !z.lang.langfulldone) {
+    if (lng && !z.lang?.langfulldone) {
       z.lang = JSON.parse(lng)
       z.lang.langfulldone = true
     }
@@ -132,9 +136,9 @@ export default function App({ Component, pageProps }) {
   return (
     <Context.Provider value={props.pageid}>
       <Script src="/xmpp.min.js" strategy="lazyOnload" onLoad={() => { Nexus(z) }} />
-      <Calendar />
-      <CalendarEN />
-      <CalendarFA />
+      {z.middleuser?.uid?<Calendar />:null}
+      {z.middleuser?.uid?<CalendarEN />:null}
+      {z.middleuser?.uid?<CalendarFA />:null}
       <div id="wind" style={{ overflowY: "auto", height: "100vh" }} >
         <Prompt />
         <Component {...props} />

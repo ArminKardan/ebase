@@ -75,7 +75,7 @@ export const Prosper = async (obj, context: GetServerSidePropsContext): Promise<
     obj.props["date"] = new Date().toISOString()
 
   }
-  delete obj.props.session.middleuser.servsecret_backend
+  delete obj.props?.session?.middleuser?.servsecret_backend
   let str = QSON.stringify(obj.props)
   let deflated = deflateToBase64(str)
   obj.props = { data: deflated }
@@ -173,6 +173,16 @@ export const SSRVerify = async (context: GetServerSidePropsContext, cached: bool
   }
 
   srv = JSON.parse(JSON.stringify(srv))
+
+  if (!srv?.topuser) {
+    // console.log("RESOLVED URL:", context.resolvedUrl)
+    // console.log("REQUEST:", context.req.url)
+    // console.log("USER IP:", userip)
+    return { //fully illegal request
+      code: -100,
+      userip
+    } as any
+  }
 
   if (srv) {
     topuser = srv.topuser;

@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import dynamic from 'next/dynamic';
 const Prompt = dynamic(() => import("@/frontend/root/Prompt.tsx").then(x => x.default), { ssr: false })
 const QELoader = dynamic(() => import("@/frontend/root/QELoader.tsx").then(x => x.default), { ssr: false })
-
 import _crossstyles from "@/styles/crossstyles";
 import pako from 'pako'
 import QSON from '@/common/QSON'
@@ -24,7 +23,7 @@ const CalendarFA = dynamic(() => import("@/frontend/components/qecomps/CalendarF
 const CalendarEN = dynamic(() => import("@/frontend/components/qecomps/CalendarEN.tsx").then(x => x.default), { ssr: false })
 const Calendar = dynamic(() => import("@/frontend/components/qecomps/Calendar.tsx").then(x => x.default), { ssr: false })
 
-const version = "1.1"
+const version = "0.1"
 
 export default function App({ Component, pageProps }) {
 
@@ -67,14 +66,16 @@ export default function App({ Component, pageProps }) {
     if (ver != version) {
       localStorage.clear()
       localStorage.setItem("version", version)
-      window.location.reload()
+      if (!props.session.devmode)
+        window.location.reload()
     }
+
     Scroller();
     DeclarationsBefore(props, z)
     APILister(props)
 
     let lng = localStorage.getItem("lang-" + props.langcode);
-    if (lng && !z.lang.langfulldone) {
+    if (lng && !z.lang?.langfulldone) {
       z.lang = JSON.parse(lng)
       z.lang.langfulldone = true
     }
@@ -115,13 +116,11 @@ export default function App({ Component, pageProps }) {
     Loopez()
     setTimeout(() => {
       if (!z.lang.code) {
-        alerter("System Fatala Error: Language not found", "دیتابیس متصل شده دارای زبان کاربر نسیت لطفا دیتابیس را با داده های اساسی پر کنی." +
+        alerter("System Fatal Error: Language not found", "دیتابیس متصل شده دارای زبان کاربر نسیت لطفا دیتابیس را با داده های اساسی پر کنی." +
           "Your connected database doesnt have essential language data, please fix it.")
       }
     }, 4000);
     document.documentElement.setAttribute('data-theme', 'light')
-
-
   }, [])
 
 
@@ -130,9 +129,9 @@ export default function App({ Component, pageProps }) {
   return (
     <Context.Provider value={props.pageid}>
       <Script src="/xmpp.min.js" strategy="lazyOnload" onLoad={() => { Nexus(z) }} />
-      <Calendar />
-      <CalendarEN />
-      <CalendarFA />
+      {z.middleuser?.uid?<Calendar />:null}
+      {z.middleuser?.uid?<CalendarEN />:null}
+      {z.middleuser?.uid?<CalendarFA />:null}
       <div id="wind" style={{ overflowY: "auto", height: "100vh" }} >
         <Prompt />
         <Component {...props} />

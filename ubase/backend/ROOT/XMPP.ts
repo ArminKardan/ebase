@@ -1,19 +1,10 @@
-import SSRVerify from '../SSRVerify'
-import { Prosper } from '../SSRVerify'
 import SerialGenerator from '@/frontend/components/qecomps/SerialGenerator'
-import schedule from 'node-schedule'
-import ws from 'ws'
 import '@/common/Prototypes'
 import { ObjectId } from 'mongodb'
-import { langType } from '@/common/SiteConfig'
-import Cacher from '../Cacher'
-const crypto = require('crypto');
 var zlib = require('zlib');
 const { client, xml } = require("../../common/xmpp.min.js");
 import pako from 'pako'
 import { Loopez } from '@/common/dynamic'
-// import { InitXM } from '../API/bridge/worker/init'
-
 
 
 export default async () => {
@@ -23,7 +14,7 @@ export default async () => {
         if (global.xmpp) {
             return;
         }
-        let resource = global.devmode ? "udevelopment" : "uservice"
+        let resource = global.devmode ? "udevelopment" : (process.env.RESOURCE || "uservice")
         let json = await (await fetch("https://qepal.com/api/bridge/worker/service", {
             method: "POST",
             body: JSON.stringify({
@@ -82,6 +73,33 @@ export default async () => {
                     }
                 ));
             },
+            on: {
+                direct: (cb) => {
+                    if (!global.xmpp_on_pool) {
+                        global.xmpp_on_pool = []
+                    }
+                    let id = SerialGenerator(5);
+                    global.xmpp_on_pool.push({ id, type: "direct", cb })
+                    return id
+                },
+                channel: (channelname: string, cb) => {
+                    if (!global.xmpp_on_pool) {
+                        global.xmpp_on_pool = []
+                    }
+                    let id = SerialGenerator(5);
+                    global.xmpp_on_pool.push({ id, type: "channel", channelname, cb })
+                    return id
+                },
+            },
+            clearon: (id: string) => {
+                if (id == "all") {
+                    global.xmpp_on_pool = []
+                }
+                else {
+                    global.xmpp_on_pool = global.xmpp_on_pool.filter(p => p.id != id && p.channelname != id && p.type != id)
+                }
+            },
+
             channels: new Set(),
             msgreceiver: () => { },
             connected: false,
@@ -144,7 +162,9 @@ export default async () => {
                     })
 
                     msg = zlib.deflateSync(msg).toString('base64')
-
+                    if (msg.length > 4096) {
+                        return "too large, max: 4Kbytes";
+                    }
                     let c = setTimeout(() => {
                         resolve({ error: "timeout" })
                     }, 120 * 1000);
@@ -211,22 +231,37 @@ export default async () => {
 
                 // let bd = deflateToBase64(specs.body)
                 let bd = zlib.deflateSync(specs.body).toString('base64')
+                if (bd.length > 4096) {
+                    return "too large, max: 4Kbytes";
+                }
                 await global.xmpp.send(global.xmppxml(
                     "message",
                     { to: jid, type: "chat" }, // type: "chat" for one-to-one messages
                     global.xmppxml("body", {}, bd,
                     )))
             },
-            sendtojid: async (jid: string, body: string) => {
+            sendtojid: async (jid: string, body: any) => {
+                if (typeof body != "string") {
+                    body = JSON.stringify(body)
+                }
                 let bd = zlib.deflateSync(body).toString('base64')
+                if (bd.length > 4096) {
+                    return "too large, max: 4Kbytes";
+                }
                 await global.xmpp.send(global.xmppxml(
                     "message",
                     { to: jid, type: "chat" }, // type: "chat" for one-to-one messages
                     global.xmppxml("body", {}, bd,
                     )))
             },
-            sendtochannel: async (channel: string, body: string) => {
+            sendtochannel: async (channel: string, body: any) => {
+                if (typeof body != "string") {
+                    body = JSON.stringify(body)
+                }
                 let bd = zlib.deflateSync(body).toString('base64')
+                if (bd.length > 4096) {
+                    return "too large, max: 4Kbytes";
+                }
                 let subs = global.nexus.channels as Set<string>
                 if (!subs.has(channel)) {
 
@@ -296,13 +331,11 @@ export default async () => {
                 const itsbro = !itsme && (from as string).includes(app + "-" + uid)
                 if (body && !stanza.getChild('delay')) {
 
+                    let json = null;
                     if (body.startsWith("{")) {
                         try {
-                            let json = JSON.parse(body);
-                            if (json.api && !from.includes("@conference.qepal.com")) {
-                                return
-                            }
-                            else if (json.mid && global.xmppapicb_bk[json.mid]) {
+                            json = JSON.parse(body);
+                            if (json.mid && global.xmppapicb_bk[json.mid]) {
                                 let mid = json.mid
                                 delete json.mid
                                 global.xmppapicb_bk[mid].cb(json)
@@ -349,8 +382,21 @@ export default async () => {
                                 }
                             }
                         }
-                        if (valid)
+                        if (valid) {
                             global.nexus.msgreceiver({ fromjid: from, body, role, channel, app, uid, resource, itsme, itsbro })
+                            if (!itsme && json) {
+                                if (global.xmpp_on_pool && global.xmpp_on_pool.length > 0) {
+                                    for (let p of global.xmpp_on_pool) {
+                                        if (p.type == "direct" && !channel) {
+                                            p.cb({ fromjid: from, body: json, role, channel, app, uid, resource, itsme: false, itsbro })
+                                        }
+                                        else if (p.type == "channel" && channel == p.channelname) {
+                                            p.cb({ fromjid: from, body: json, role, channel, app, uid, resource, itsme: false, itsbro })
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
                     }
                 }

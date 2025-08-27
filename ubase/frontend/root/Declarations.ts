@@ -25,9 +25,12 @@ export const DeclarationsAfter = (props, z) => {
     await send({ api: "exitsystem" })
   }
 
-  if (props.pageid) {
-    import('@/frontend/root/Progress.ts').then(x => x.Runner(props.pageid))
-  }
+
+  try {
+    if (props.pageid) {
+      import('@/frontend/root/Progress.ts').then(x => x.Runner(props.pageid)).catch(e => { })
+    }
+  } catch { }
 
   if (z.lang) {
     let el = document.getElementById("wind")
@@ -64,28 +67,24 @@ export const DeclarationsAfter = (props, z) => {
 
 
 export const LangRestore = (props, z) => {
-  if (!z.lang.langfulldone) {
+  if (!z.lang?.langfulldone) {
     let lng = localStorage.getItem("lang-" + props.langcode);
     if (!lng || (lng && new Date().getTime() - Number(localStorage.getItem("lang-" + props.langcode + "-exp")) > 900000)) {
       (async () => {
-        let resp = await (await fetch("/api/lang?lang=" + props.langcode)).json()
-        if (Object.keys(resp || {}).length > 1) {
-          z.lang = resp;
-          localStorage.setItem("lang-" + props.langcode, JSON.stringify(resp))
-          localStorage.setItem("lang-" + props.langcode + "-exp", new Date().getTime().toString())
-          // setTimeout(() => {
-          //   reload()
-          // }, 2000);
-
-        }
+        try {
+          await sleep(2000)
+          let resp = await (await fetch("/api/lang?lang=" + props.langcode)).json()
+          if (Object.keys(resp || {}).length > 1) {
+            z.lang = resp;
+            localStorage.setItem("lang-" + props.langcode, JSON.stringify(resp))
+            localStorage.setItem("lang-" + props.langcode + "-exp", new Date().getTime().toString())
+          }
+        } catch { }
       })()
     }
     else if (lng && !z.lang.langfulldone) {
       z.lang = JSON.parse(lng)
       z.lang.langfulldone = true
-      // setTimeout(() => {
-      //   reload()
-      // }, 2000);
     }
   }
 }
@@ -110,16 +109,18 @@ export const DeclarationsBefore = (props, z) => {
 
   window.api = async (url: string, data?: any): Promise<any> => {
     if (data) {
-      return await (await fetch(url, { method: "POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify(data) })).json()
+      return await (await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })).json()
     }
     else {
       return await (await fetch(url)).json()
     }
   }
 
-  
+
   window.sleep = async ms => await new Promise(r => setTimeout(() => r(null), ms)) as any
   window.pageProps = props;
 
@@ -280,12 +281,10 @@ export const DeclarationsBefore = (props, z) => {
 
 export const APILister = (props) => {
   let apistored = localStorage.getItem("apilist")
-
-  setCookie("pageid", props.pageid, { maxAge: 365 * 24 * 3600000, sameSite:"none", secure:true})
-
+  setCookie("pageid", props.pageid, { maxAge: 365 * 24 * 3600000, sameSite: "none", secure: true })
   if (props.apilist?.length > 0) {
     // console.log("Refreshing apis from server...")
-    setCookie("apihash", MD5(JSON.stringify(props.apilist)), { maxAge: 300,sameSite:"none", secure:true })
+    setCookie("apihash", MD5(JSON.stringify(props.apilist)), { maxAge: 300, sameSite: "none", secure: true })
     localStorage.setItem("apilist", JSON.stringify(props.apilist))
     apier(props.apilist)
   }
@@ -300,7 +299,7 @@ export const APILister = (props) => {
     setTimeout(() => {
       console.log("api-expire-reload")
       deleteCookie("apilistexpire")
-      window.location.reload()
+      // window.location.reload()
     }, 2000);
   }
 }

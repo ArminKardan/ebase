@@ -34,8 +34,9 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-    }
+      ]
+    },
+    "types": []
   },
   "include": [
     "global.d.ts",

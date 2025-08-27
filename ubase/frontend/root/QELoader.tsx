@@ -2,10 +2,10 @@ import { SSRGlobal } from "../components/qecomps/Context"
 
 export default () => {
   let z = SSRGlobal()
-  // if(global.noloading)
-  // {
-  //   return null
-  // }
+  if(global.noloading || !z.qestyles)
+  {
+    return null
+  }
   return <div className={z.qestyles.op0} id="grayer" style={{ display: "none"
   , transition: "ease-out 0.4s", zIndex: 10001 }}>
     {/* <div className={z.styles.blackblurybg} style={{ zIndex: 250, opacity: 1 }}></div> */}

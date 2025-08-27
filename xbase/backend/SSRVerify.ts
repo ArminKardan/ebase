@@ -376,6 +376,8 @@ export const SSRVerify = async (context: GetServerSidePropsContext, cached: bool
   delete topuser.phone
   delete middleuser.phone;
 
+  middleuser.rolecheck = (check) => rolecheck(check, middleuser?.role || []);
+  
   if (!nlangkeys) {
     nlangkeys = []
   }

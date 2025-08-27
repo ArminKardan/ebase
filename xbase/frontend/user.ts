@@ -83,5 +83,7 @@ export type MiddleUserType = {
   status: "approved" | "rejected" | "waiting",
   regdate: number,
   servsecret_backend: string,
+  role: Array<RoleName>,
+  rolecheck: (check: Array<RoleName>) => boolean,
   tempsecret_backend: { generate: () => Promise<string>, verify: (input: string) => Promise<boolean> },
 }

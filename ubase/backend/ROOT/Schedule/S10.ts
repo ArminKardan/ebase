@@ -6,7 +6,7 @@ import SerialGenerator from "@/frontend/components/qecomps/SerialGenerator"
 export const APIERLoop = async ()=>{
     if (!global.API) global.API = {} as any
 
-    if (!API?.["request"]) {
+    if (!API?.["system/request"]) {
         console.log("starting APIs...")
     }
     if (global.devmode) {

@@ -58,7 +58,7 @@ export default (props: {
     <f-c style={{ width: "100%" }} >
 
       <c-cc style={{position:"relative"}}>
-        {props.image2 ? <f-c style={{ position: "absolute", bottom: 0, left: 32, borderRadius: 3, padding: "2px 2px" }}>
+        {props.image2 ? <f-c style={{ position: "absolute", bottom:props.special? -4:0, left: 32, borderRadius: 3, padding: "2px 2px", zIndex:2 }}>
           <Img src={global.cdn(props.image2)} style={{ width: 18, height: 18}} />
         </f-c> : null}
         {typeof icon == "string" ? <Img src={global.cdn(icon)} style={{

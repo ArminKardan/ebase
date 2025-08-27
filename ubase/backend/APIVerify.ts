@@ -35,7 +35,6 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<APISes
   var body = null
   // if (req.body && typeof req.body != "string")
   body = req.body
-  post ? JSON.parse(req.body) : null;
   if (!body)
     body = {}
 

@@ -190,7 +190,7 @@ const Page: PageEl = (props, refresh, getProps, onLoad, onConnected, dies, isFro
       <w-cse style={{ gap: 10 }}>
 
         <button className="btn btn-soft" style={{ fontWeight: 100 }} onClick={async () => {
-          alerter(await API["testing"]({ text: "ihihihi" }))
+          alerter(await API["system/ping"]({ text: "test" }))
         }}>API</button>
 
         <button className="btn btn-soft" style={{ fontWeight: 100 }} onClick={async () => {
