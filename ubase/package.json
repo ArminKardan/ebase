@@ -10,7 +10,7 @@
     "build": "cmd /C \"npx ts-node --transpileOnly ./sync.ts && set CIRCLE_NODE_TOTAL=1 && set ANALYZE=true && set DEVMODE=true && set BUILDMODE=true && set NEXT_MANUAL_SIG_HANDLE=1 && next build\"",
     "start": "cmd /C \"npx ts-node --transpileOnly ./sync.ts && set CIRCLE_NODE_TOTAL=1 && set DEVMODE=false && set STARTMODE=true && set NEXT_MANUAL_SIG_HANDLE=1 && next start\"",
     "devlinux": "CIRCLE_NODE_TOTAL=1 DEVMODE=true NEXT_MANUAL_SIG_HANDLE=1 next dev",
-    "buildlinux": "CIRCLE_NODE_TOTAL=1 ANALYZE=true DEVMODE=true BUILDMODE=true NEXT_MANUAL_SIG_HANDLE=1 next build",
+    "buildlinux": "PORT=2500 CIRCLE_NODE_TOTAL=1 ANALYZE=true DEVMODE=true BUILDMODE=true NEXT_MANUAL_SIG_HANDLE=1 next build",
     "startlinux": "CIRCLE_NODE_TOTAL=1 DEVMODE=false STARTMODE=true NEXT_MANUAL_SIG_HANDLE=1 next start",
     "lint": "next lint",
     "types": "tsc --noEmit"
@@ -22,5 +22,6 @@
     "path": false,
     "tls": false
   },
-  "name": "ebase-ubase"
+  "name": "ebase-ubase",
+  "v2": true
 }

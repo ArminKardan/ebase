@@ -185,6 +185,33 @@ export namespace App {
                     }
                 ));
             },
+            on: {
+                direct: (cb) => {
+                    if (!global.xmpp_on_pool) {
+                        global.xmpp_on_pool = []
+                    }
+                    let id = SerialGenerator(5);
+                    global.xmpp_on_pool.push({ id, type: "direct", cb })
+                    return id
+                },
+                channel: (channelname: string, cb) => {
+                    if (!global.xmpp_on_pool) {
+                        global.xmpp_on_pool = []
+                    }
+                    let id = SerialGenerator(5);
+                    global.xmpp_on_pool.push({ id, type: "channel", channelname, cb })
+                    return id
+                },
+            },
+            clearon: (id: string) => {
+                if (id == "all") {
+                    global.xmpp_on_pool = []
+                }
+                else {
+                    global.xmpp_on_pool = global.xmpp_on_pool.filter(p => p.id != id && p.channelname != id && p.type != id)
+                }
+            },
+
             channels: new Set(),
             msgreceiver: () => { },
             connected: false,
@@ -247,6 +274,10 @@ export namespace App {
                     })
 
                     msg = deflateToBase64(msg)
+
+                    if (msg.length > 4096) {
+                        return "too large, max: 4Kbytes";
+                    }
 
                     let c = setTimeout(() => {
                         resolve({ error: "timeout" })
@@ -317,6 +348,9 @@ export namespace App {
 
 
                 let bd = deflateToBase64(specs.body)
+                if (bd.length > 4096) {
+                    return "too large, max: 4Kbytes";
+                }
                 await global.xmpp.send(global.xmppxml(
                     "message",
                     { to: jid, type: "chat" }, // type: "chat" for one-to-one messages
@@ -325,16 +359,28 @@ export namespace App {
             },
 
 
-            sendtojid: async (jid: string, body: string) => {
+            sendtojid: async (jid: string, body: any) => {
+                if (typeof body != "string") {
+                    body = JSON.stringify(body)
+                }
                 let bd = zlib.deflateSync(body).toString('base64')
+                if (bd.length > 4096) {
+                    return "too large, max: 4Kbytes";
+                }
                 await global.xmpp.send(global.xmppxml(
                     "message",
                     { to: jid, type: "chat" }, // type: "chat" for one-to-one messages
                     global.xmppxml("body", {}, bd,
                     )))
             },
-            sendtochannel: async (channel: string, body: string) => {
+            sendtochannel: async (channel: string, body: any) => {
+                if (typeof body != "string") {
+                    body = JSON.stringify(body)
+                }
                 let bd = zlib.deflateSync(body).toString('base64')
+                if (bd.length > 4096) {
+                    return "too large, max: 4Kbytes";
+                }
                 let subs = global.nexus.channels as Set<string>
                 if (!subs.has(channel)) {
 
@@ -476,7 +522,6 @@ export namespace App {
 
 
     export async function Connect(config: {
-        resource: string,
         public?: boolean,
         image?: string,
     }): Promise<{
@@ -486,10 +531,12 @@ export namespace App {
     }> {
 
 
-        if (config.resource.includes("-")) {
-            throw "Error: resource name should not contains dash '-'."
+        let appname = path.basename(path.join(__dirname, "../../"))
+        let workername = path.basename(path.join(__dirname, "../"))
+        global.resource = workername + "." + appname + ".dev"
+        if (process.env.RESOURCE) {
+            global.resource = process.env.RESOURCE
         }
-
         let secret = null
         if (process.env.EXPLORE_SECRET) {
             secret = process.env.EXPLORE_SECRET
@@ -507,7 +554,7 @@ export namespace App {
             body: JSON.stringify({
                 secret: secret,
                 image: config.image,
-                resource: config.resource,
+                resource: global.resource,
                 public: config.public
             })
         })).json()
@@ -520,9 +567,9 @@ export namespace App {
         global.app = json.app
         global.xmrole = json.role
         global.uid = ObjectId.createFromHexString(json.uid)
-        global.myjid = json.user + "@qepal.com/" + config.resource
+        global.myjid = json.user + "@qepal.com/" + global.resource
 
-        c = { app: json.app, image: config.image, public: config.public, resource: config.resource }
+        c = { app: json.app, image: config.image, public: config.public, resource:global.resource }
 
         if (global.wsdebug) console.log("Connect function calling...")
 
@@ -551,7 +598,7 @@ export namespace App {
             const xmpp = client({
                 service: "wss://bridge.qepal.com/ws",
                 domain: "qepal.com",
-                resource: config.resource,
+                resource: global.resource,
                 username: json.user,
                 password: json.password,
             });
@@ -630,10 +677,10 @@ export namespace App {
                     let itsbro = !itsme && (from as string).includes(global.app + "-" + global.uid.toString())
                     if (body && !stanza.getChild('delay')) {
 
-
+                        let json = null
                         if (body.startsWith("{")) {
                             try {
-                                let json = JSON.parse(body);
+                                json = JSON.parse(body);
                                 if (json.api && !from.includes("@conference.qepal.com")) {
                                     let found = false
                                     for (let ev of Events) {
@@ -671,7 +718,7 @@ export namespace App {
                                                 else {
                                                     servid = json.servid;
                                                     servsecret = process.env.SERVICE_SECRET;
-                                                    users[uid] = {servid, servsecret}
+                                                    users[uid] = { servid, servsecret }
                                                 }
                                             }
                                             else if (!users[uid] && process.env.EXPLORE_SECRET) {
@@ -689,7 +736,7 @@ export namespace App {
                                                 else {
                                                     servid = json.servid;
                                                     servsecret = json.secret;
-                                                    users[uid] = {servid, servsecret}
+                                                    users[uid] = { servid, servsecret }
                                                 }
                                             }
                                             else if (users[uid]) {
@@ -747,13 +794,27 @@ export namespace App {
                             resource = tail
                             if (uid == global.uid.toHexString()) {
                                 itsbro = true
-                                if (config.resource == resource) {
+                                if (global.resource == resource) {
                                     itsme = true
                                 }
                             }
                             if (heads.length == 3 || heads.length == 4) {
                                 if (uid.length == 24 && ObjectId.isValid(uid)) {
                                     global.nexus.msgreceiver({ fromjid: from, body, role, channel, app, uid, resource, itsme, itsbro })
+
+                                    if (!itsme && json) {
+                                        if (global.xmpp_on_pool && global.xmpp_on_pool.length > 0) {
+                                            for (let p of global.xmpp_on_pool) {
+                                                if (p.type == "direct" && !channel) {
+                                                    p.cb({ fromjid: from, body: json, role, channel, app, uid, resource, itsme: false, itsbro })
+                                                }
+                                                else if (p.type == "channel" && channel == p.channelname) {
+                                                    p.cb({ fromjid: from, body: json, role, channel, app, uid, resource, itsme: false, itsbro })
+                                                }
+                                            }
+                                        }
+                                    }
+
                                 }
                             }
                         }
@@ -763,6 +824,7 @@ export namespace App {
 
             xmpp.on('online', async (address) => {
                 xmpp.send(xml("presence"));
+                console.log(`[nexus-${global.resource}] connected.`)
                 r(c)
             });
 
@@ -779,8 +841,13 @@ export namespace App {
             });
 
 
-
+            App.on("ping", async (specs) => {
+                console.log("ping request from:", specs.uid)
+                return { code: 0, pong: true }
+            })
         })
+
+
     }
 
     export const Figlet = (text): string => {
@@ -832,7 +899,19 @@ export namespace App {
             formData.append('submit', '1');
 
             // Convert the string to a Buffer, then to a readable stream
-            const bufferContent = Buffer.from(content, 'utf-8'); // Convert string to Buffer
+            let bufferContent: any = Buffer.from("No data.", "utf8")
+            if (Buffer.isBuffer(content)) {
+                bufferContent = content
+            }
+            else if (typeof content == "string") {
+                bufferContent = Buffer.from(content, 'utf-8'); // Convert string to Buffer
+            }
+            else if (typeof content == "object") {
+                bufferContent = Buffer.from(JSON.stringify(content, null, 2), 'utf-8'); // Convert string to Buffer
+            }
+
+            bufferContent = content
+
             const bufferStream = streamifier.createReadStream(bufferContent); // Convert Buffer to stream
 
             // Debugging: Check the type of 'content' and 'bufferStream'
