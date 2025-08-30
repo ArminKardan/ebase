@@ -1,41 +1,69 @@
 import asyncio
-import sys
-import threading
-import time
-import os
-
-libs_path = os.path.join(os.path.dirname(__file__))
-if libs_path not in sys.path:
-    sys.path.insert(0, libs_path)
-
-from libs.bridge import APISpecs, App as app, MessageSpecs, SetInterval
-import json
+from libs.bridge import NexusAPISpecs, App as AppClass, NexusMessageSpecs
+from libs.bridge import setInterval, clearInterval, setTimeout
 
 
-App = app(public=True)
+App = AppClass(public=True, rest=False)
+
+counter = 0
+@setInterval(500, "c")
+def f():
+    global counter
+    counter += 1
+    print("hi", counter)
+    if counter > 5:
+        clearInterval("c")
 
 
-
-# @App.rest.get("/")
-# def root():
-#     return {"message": "this is rest api"}
-
-
-# @App.rest.get("/items/{item_id}")
-# def item(item_id: int):
-#     return {"item_id": item_id}
+@setTimeout(5000)
+def f():
+    print("timedout 1")
+    @setInterval(1000)
+    def f():
+        print("intervaling...")
+        App.sendtochannel("mychannel", ["hello"])
 
 
-async def api(specs: APISpecs):
-    if specs.cmd == "test":
-        return {"code": 0}
+@setTimeout(1000)
+async def f():
+    print("timedout 2")
+    res = await App.api(app="eagents", cmd="ping", resource="wagents.ex")
+    print(res)
 
 
-# async def msgreceiver(specs: MessageSpecs):
-#     print("MSG:", specs)
+@App.nexus.API("ping")
+async def f(specs: NexusAPISpecs):
+    return {"code": 0, "ponger": True}
 
 
-App.xmpp.onapi = api
-# App.xmpp.msgreceiver = msgreceiver
+@App.nexus.Direct()
+async def f(specs: NexusMessageSpecs):
+    print("Direct:", specs.body)
+    return {"code": 0, "direct": True}
+
+
+App.subscribe("mychannel")
+@App.nexus.Channel("mychannel")
+async def f(specs: NexusMessageSpecs):
+    print("Channel:", specs.channel, specs.body)
+    return {"code": 0, "ponger": True}
+
+
+@App.nexus.MsgReceiver()
+async def f(specs: NexusMessageSpecs):
+    print("Message:", specs)
+    return {"code": 0, "ponger": True}
+
+
+@App.rest.get("/items/{item_id}")
+def f(item_id: int):
+    return {"item_id": item_id}
+
+
+@App.rest.get("/")
+def f():
+    return {"message": "this is rest api"}
+
+
 loop = asyncio.get_event_loop()
 loop.run_forever()

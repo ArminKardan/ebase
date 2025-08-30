@@ -9,7 +9,7 @@ import traceback
 from fastapi import FastAPI
 import nest_asyncio
 import logging
-from slixmpp import ClientXMPP
+from slixmpp import ClientXMPP as NexusClient
 import ssl
 import json
 from bson import ObjectId
@@ -143,7 +143,7 @@ nest_asyncio.apply()
 
 
 @dataclass
-class APISpecs:
+class NexusAPISpecs:
     cmd: str
     uid: str
     role: str
@@ -155,7 +155,7 @@ class APISpecs:
 
 
 @dataclass
-class MessageSpecs:
+class NexusMessageSpecs:
     fromjid: str
     body: str | dict
     role: str
@@ -167,118 +167,93 @@ class MessageSpecs:
     itsbro: bool
 
 
-class SetInterval:
-    def __init__(self, callback, interval_ms):
-        self.callback = callback
-        self.interval = interval_ms / 1000  # convert ms to seconds
-        self._task = None
-        self._stopped = False
+setintvl_list = []
 
-    async def _run(self):
-        while not self._stopped:
-            await asyncio.sleep(self.interval)
+
+def clearInterval(key):
+    for item in setintvl_list:
+        if item["key"] == key:
+            item["task"].cancel()
+
+
+def clearTimeout(key):
+    for item in setintvl_list:
+        if item["key"] == key:
+            item["task"].cancel()
+
+
+def setInterval(interval: float | int, key=None, safe: bool = False):
+    def decorator(func):
+        async def _run():
+            while True:
+                await asyncio.sleep(interval / 1000)
+                try:
+                    if inspect.iscoroutinefunction(func):
+                        if safe:
+                            mainloop.call_soon_threadsafe(
+                                lambda: asyncio.create_task(func())
+                            )
+                        else:
+                            await func()
+                    else:
+                        if safe:
+                            mainloop.call_soon_threadsafe(func)
+                        else:
+                            func()
+                except Exception as e:
+                    print(f"[SetInterval Error] {e}")
+
+        loop = asyncio.get_event_loop()
+        _task = loop.create_task(_run())
+        k = key
+        if not k:
+            k = SerialGenerator(10)
+        setintvl_list.append({"task": _task, "key": k})
+
+        def wrapper(*args, **kwargs):
+            return None
+
+        return wrapper
+
+    return decorator
+
+
+def setTimeout(timeout: float | int, key=None, safe: bool = False):
+    def decorator(func):
+        async def _run():
+            await asyncio.sleep(timeout / 1000)
             try:
-                if inspect.iscoroutinefunction(self.callback):
-                    await self.callback()
+                if inspect.iscoroutinefunction(func):
+                    if safe:
+                        mainloop.call_soon_threadsafe(
+                            lambda: asyncio.create_task(func())
+                        )
+                    else:
+                        await func()
                 else:
-                    self.callback()
+                    if safe:
+                        mainloop.call_soon_threadsafe(func)
+                    else:
+                        func()
             except Exception as e:
-                print(f"[SetInterval Error] {e}")
+                print(f"[SetTimeout Error] {e}")
 
-    def start(self):
+        k = key
+        if not k:
+            k = SerialGenerator(10)
         loop = asyncio.get_event_loop()
-        self._task = loop.create_task(self._run())
+        _task = loop.create_task(_run())
+        setintvl_list.append({"task": _task, "key": k})
 
-    def stop(self):
-        self._stopped = True
-        if self._task:
-            self._task.cancel()
+        def wrapper(*args, **kwargs):
+            return None
 
+        return wrapper
 
-class SetTimeout:
-    def __init__(self, callback, timeout_ms):
-        self.callback = callback
-        self.timeout = timeout_ms / 1000  # convert ms to seconds
-        self._task = None
-
-    async def _run(self):
-        try:
-            await asyncio.sleep(self.timeout)
-            if inspect.iscoroutinefunction(self.callback):
-                await self.callback()
-            else:
-                self.callback()
-        except Exception as e:
-            print(f"[SetTimeout Error] {e}")
-
-    def start(self):
-        loop = asyncio.get_event_loop()
-        self._task = loop.create_task(self._run())
-
-    def cancel(self):
-        if self._task:
-            self._task.cancel()
+    return decorator
 
 
-class SetIntervalSafe:
-    def __init__(self, callback, interval_ms):
-        self.callback = callback
-        self.interval = interval_ms / 1000  # convert ms to seconds
-        self._task = None
-        self._stopped = False
-
-    async def _run(self):
-        while not self._stopped:
-            await asyncio.sleep(self.interval)
-            try:
-                if inspect.iscoroutinefunction(self.callback):
-                    mainloop.call_soon_threadsafe(
-                        lambda: asyncio.create_task(self.callback())
-                    )
-                else:
-                    mainloop.call_soon_threadsafe(self.callback)
-            except Exception as e:
-                print(f"[SetInterval Error] {e}")
-
-    def start(self):
-        loop = asyncio.get_event_loop()
-        self._task = loop.create_task(self._run())
-
-    def stop(self):
-        self._stopped = True
-        if self._task:
-            self._task.cancel()
-
-
-class SetTimeoutSafe:
-    def __init__(self, callback, timeout_ms):
-        self.callback = callback
-        self.timeout = timeout_ms / 1000  # convert ms to seconds
-        self._task = None
-
-    async def _run(self):
-        try:
-            await asyncio.sleep(self.timeout)
-            if inspect.iscoroutinefunction(self.callback):
-                # print("CALLED")
-                mainloop.call_soon_threadsafe(
-                    lambda: asyncio.create_task(self.callback())
-                )
-            else:
-                mainloop.call_soon_threadsafe(self.callback)
-        except Exception as e:
-            print(f"[SetTimeout Error] {e}")
-
-    def start(self):
-        loop = asyncio.get_event_loop()
-        self._task = loop.create_task(self._run())
-
-    def cancel(self):
-        if self._task:
-            self._task.cancel()
-
-
-def serial_generator(length: int) -> str:
+def SerialGenerator(length: int) -> str:
     chars = string.digits + string.ascii_uppercase + string.ascii_lowercase
     random_string = "".join(random.choice(chars) for _ in range(length))
     return random_string
@@ -295,29 +270,35 @@ def SHA256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-class WSX(ClientXMPP):
+class Nexus(NexusClient):
     connected = False
     users = {}
     nicknameToJidMap = {}
     eventdatax = {}
 
-    msgreceiver = None
-
     def __init__(self, jid, password, app: str, uid: str, resource: str):
 
-        appname = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")))
-        workername = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")))
-        
+        appname = os.path.basename(
+            os.path.normpath(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
+            )
+        )
+        workername = os.path.basename(
+            os.path.normpath(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
+            )
+        )
+
         if "-" in app:
             raise "app should not contain dash '-'"
         if "-" in resource:
             raise "resource should not contain dash '-'"
 
-        ClientXMPP.__init__(self, jid, password)
+        NexusClient.__init__(self, jid, password)
         self.app = app
         self.uid = uid
         self._resource = f"{workername}.{appname}.dev"
-        
+
         if os.getenv("RESOURCE"):
             self._resource = os.getenv("RESOURCE")
         self.password = password
@@ -374,6 +355,61 @@ class WSX(ClientXMPP):
         )
         self.process(forever=False)
 
+    api_handler_list = []
+    channel_handler_list = []
+    direct_handler = None
+    msgreceiver_handler = None
+
+    @staticmethod
+    def API(cmd):
+        def decorator(func):
+            Nexus.api_handler_list.append({"func": func, "cmd": cmd})
+
+            def wrapper(*args, **kwargs):
+                return None
+
+            return wrapper
+
+        return decorator
+
+    @staticmethod
+    def Direct():
+        def decorator(func):
+            Nexus.direct_handler = func
+
+            def wrapper(*args, **kwargs):
+                return None
+
+            return wrapper
+
+        return decorator
+
+    @staticmethod
+    def Channel(channelname):
+        def decorator(func):
+            Nexus.channel_handler_list.append(
+                {"func": func, "channelname": channelname}
+            )
+
+            def wrapper(*args, **kwargs):
+                return None
+
+            return wrapper
+
+        return decorator
+
+    @staticmethod
+    def MsgReceiver():
+        def decorator(func):
+            Nexus.msgreceiver_handler = func
+
+            def wrapper(*args, **kwargs):
+                return None
+
+            return wrapper
+
+        return decorator
+
     async def on_message(self, stanza):
         """Handle incoming messages."""
         if stanza.tag == "{jabber:client}message":
@@ -400,18 +436,16 @@ class WSX(ClientXMPP):
 
                 itsbro = False
                 itsme = False
-
-                if body.startswith("{"):
+                json_body = body.strip()
+                
+                if body.startswith("{") or body.startswith("["):
                     try:
-                        json_data = json.loads(body)
-                        if (
-                            "api" in json_data
-                            and "@conference.qepal.com" not in from_jid
-                        ):
+                        json_body = json.loads(body)
+                        if "api" in json_body and "@conference.qepal.com" not in from_jid:
 
                             data = {
                                 k: v
-                                for k, v in json_data.items()
+                                for k, v in json_body.items()
                                 if k not in ["api", "mid"]
                             }
                             uid = None
@@ -463,40 +497,44 @@ class WSX(ClientXMPP):
                                 servsecret = self.users[uid].get("secret")
 
                             if res["code"] != -3000:
-                                if json_data["api"] == "ping":
-                                    return {"pong": True, "environment":"python"}
-                                res = await self.onapi(
-                                    APISpecs(
-                                        **{
-                                            "cmd": json_data["api"],
-                                            "uid": uid,
-                                            "role": role,
-                                            "app": app,
-                                            "resource": resource,
-                                            "servid": servid,
-                                            "servsecret": servsecret,
-                                            "body": data,
-                                        }
-                                    )
+                                json_api = json_body.get("api")
+                                args = NexusAPISpecs(
+                                    **{
+                                        "cmd": json_body.get("api"),
+                                        "uid": uid,
+                                        "role": role,
+                                        "app": app,
+                                        "resource": resource,
+                                        "servid": servid,
+                                        "servsecret": servsecret,
+                                        "body": data,
+                                    }
                                 )
 
+                                if json_api == "ping":
+                                    res = {"pong": True, "environment": "python"}
+
+                                for api in Nexus.api_handler_list:
+                                    if api["cmd"] == json_api:
+                                        res = await api["func"](args)
+                                        break
+
                             if not res:
-                                res = {}
+                                res = {"code": -1000, "msg": "no api handler"}
 
                             self.send_message(
                                 mto=from_jid,
                                 mbody=deflate_to_base64(
-                                    json.dumps({**res, "mid": json_data.get("mid")})
+                                    json.dumps({**res, "mid": json_body.get("mid")})
                                 ),
                             )
 
-                        elif (
-                            "mid" in json_data and eventsx.get(json_data["mid"]) != None
-                        ):
-                            mid = json_data["mid"]
-                            del json_data["mid"]
-                            self.eventdatax[mid] = json_data
-                            eventsx[mid].set()
+                        elif ("mid" in json_body and eventsx.get(json_body["mid"]) != None):
+                            mid = json_body.get("mid")
+                            if mid:
+                                del json_body["mid"]
+                                self.eventdatax[mid] = json_body
+                                eventsx[mid].set()
 
                             return
                     except Exception as e:
@@ -542,32 +580,43 @@ class WSX(ClientXMPP):
                         and len(uid) == 24
                         and ObjectId.is_valid(uid)
                     ):
-                        if self.msgreceiver:
-                            try:
-                                body = json.loads(body)
-                                if (
-                                    type(body) == dict
-                                    and body.get("api")
-                                    and body.get("mid")
-                                ):
-                                    return
-                            except:
-                                pass
-                            await self.msgreceiver(
-                                MessageSpecs(
-                                    **{
-                                        "fromjid": from_jid,
-                                        "body": body,
-                                        "role": role,
-                                        "channel": channel,
-                                        "app": app,
-                                        "uid": uid,
-                                        "resource": _resource,
-                                        "itsme": itsme,
-                                        "itsbro": itsbro,
-                                    }
-                                )
-                            )
+                        
+                        try:
+                            json_body = json.loads(body)
+                            if (
+                                type(json_body) == dict
+                                and json_body.get("api")
+                                and json_body.get("mid")
+                            ):
+                                return
+                        except:
+                            pass
+
+                        args = NexusMessageSpecs(
+                            **{
+                                "fromjid": from_jid,
+                                "body": json_body,
+                                "role": role,
+                                "channel": channel,
+                                "app": app,
+                                "uid": uid,
+                                "resource": _resource,
+                                "itsme": itsme,
+                                "itsbro": itsbro,
+                            }
+                        )
+
+                        if channel:
+                            for i in Nexus.channel_handler_list:
+                                if i["channelname"] == channel:
+                                    await i["func"](args)
+                                    break
+                        elif Nexus.direct_handler:
+                            await Nexus.direct_handler(args)
+
+                        if Nexus.msgreceiver_handler:
+                            await Nexus.msgreceiver_handler(args)
+
                 except Exception as e:
                     print("Error message:", str(e))
                     print("Full traceback:")
@@ -575,7 +624,7 @@ class WSX(ClientXMPP):
 
 
 class App:
-    xmpp: WSX = None
+    nexus: Nexus = None
     udb = None
     xdb = None
     rest_online = False
@@ -639,15 +688,23 @@ class App:
         for p in envs:
             load_dotenv(dotenv_path=p)
         self.channels = set()
-        
-        appname = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")))
-        workername = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")))
-        
+
+        appname = os.path.basename(
+            os.path.normpath(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
+            )
+        )
+        workername = os.path.basename(
+            os.path.normpath(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
+            )
+        )
+
         self.resource = f"{workername}.{appname}.dev"
 
         if os.getenv("RESOURCE"):
             self.resource = os.getenv("RESOURCE")
-            
+
         self.image = image
         self.public = public
         if "-" in self.resource:
@@ -749,8 +806,8 @@ class App:
         # print(
         #     "trying JID:", self.myjid, self.password, self.app, self.uid, self.resource
         # )
-        
-        self.xmpp = WSX(self.myjid, self.password, self.app, self.uid, self.resource)
+
+        self.nexus = Nexus(self.myjid, self.password, self.app, self.uid, self.resource)
 
         def run_event_loop(loop_coroutine):
             asyncio.run(loop_coroutine)
@@ -763,7 +820,7 @@ class App:
 
         # print("PASS1")
         while True:
-            if self.xmpp.connected:
+            if self.nexus.connected:
                 break
             time.sleep(0.1)
 
@@ -772,13 +829,13 @@ class App:
         self.run_rest()
 
     def on(self, api: str, cb: callable):
-        self.xmpp.on(api, cb)
+        self.nexus.on(api, cb)
 
     def sendtojid(self, jid: str, body: str):
-        self.xmpp.send_message(mto=jid, mbody=deflate_to_base64(body))
+        self.nexus.send_message(mto=jid, mbody=deflate_to_base64(body))
 
     def connected(self):
-        return self.xmpp.connected
+        return self.nexus.connected
 
     async def api(
         self,
@@ -830,14 +887,18 @@ class App:
         if jid == None:
             return {"error": "no worker found"}
 
-        mid = serial_generator(10)
+        mid = SerialGenerator(10)
         msg = {"mid": mid, "api": cmd, **body}
 
         eventsx[mid] = asyncio.Event()
         self.sendtojid(jid, json.dumps(msg))
-        SetTimeout(lambda: eventsx[mid].set(), 60000).start()
+
+        @setTimeout(60000)
+        def f():
+            eventsx[mid].set()
+
         await eventsx[mid].wait()
-        data = self.xmpp.eventdatax.get(mid)
+        data = self.nexus.eventdatax.get(mid)
         if data == None:
             data = {"error": "timeout"}
         return data
@@ -846,7 +907,7 @@ class App:
         self,
         *,
         app: str,
-        body: str,
+        body: str | dict | list,
         onlymine: bool = False,
         onlyowner: bool = False,
         resource: str = None,
@@ -891,10 +952,12 @@ class App:
         if jid == None:
             return {"error": "no worker found"}
 
+        if type(body) == dict or type(body) == list:
+            body = json.dumps(body)
         self.sendtojid(jid, body)
 
     def subscribe(self, channelname: str):
-        self.xmpp.send_presence(
+        self.nexus.send_presence(
             pto=channelname
             + "@conference.qepal.com/"
             + self.app
@@ -904,23 +967,24 @@ class App:
             + self.resource,
             ptype="available",
         )
-        self.xmpp.get_roster()
+        self.nexus.get_roster()
         self.channels.add(channelname)
 
     def unsubscribe(self, channelname: str):
-        self.xmpp.send_presence(
+        self.nexus.send_presence(
             pto=channelname + "@conference.qepal.com", ptype="unavailable"
         )
-        self.xmpp.get_roster()
+        self.nexus.get_roster()
         self.channels.remove(channelname)
 
-    def sendtochannel(self, channelname: str, body: str):
+    def sendtochannel(self, channelname: str, body: str | dict | list):
         if channelname not in self.channels:
             self.subscribe(channelname)
-
+        if type(body) == dict or type(body) == list:
+            body = json.dumps(body)
         # self.subscribe(channelname)
-        self.xmpp.get_roster()
-        self.xmpp.send_message(
+        self.nexus.get_roster()
+        self.nexus.send_message(
             mto=f"{channelname}@conference.qepal.com",
             mbody=deflate_to_base64(body),
             mtype="groupchat",
@@ -1047,16 +1111,16 @@ class App:
         ssl_ctx = ssl.create_default_context()
         ssl_ctx.check_hostname = False
         ssl_ctx.verify_mode = ssl.CERT_NONE
-        self.xmpp.ssl_context = ssl_ctx
+        self.nexus.ssl_context = ssl_ctx
 
-        self.xmpp.connect(
+        self.nexus.connect(
             address=("qepal.com", 5222),
             disable_starttls=False,
             force_starttls=True,
         )
 
         try:
-            self.xmpp.process(forever=True)
+            self.nexus.process(forever=True)
         except KeyboardInterrupt:
             print("Exiting the application...")
             sys.exit()

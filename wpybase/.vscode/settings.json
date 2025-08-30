@@ -1,6 +1,15 @@
+
 {
     "python.defaultInterpreterPath": "./python",
     "python.analysis.extraPaths": [
         "./libs"
-    ]
+    ],
+    "files.exclude": {
+    "**/node_modules": true,
+    "**/__pycache__": true,
+    "**/python": true,
+    "**/.venv": true,
+    "**/sys": true,
+    "**/.vscode": true
+  }
 }
