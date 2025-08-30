@@ -746,10 +746,8 @@ class App:
                     client = MongoClient(mongourl)
                     client.server_info()
                     self.udb = client[mongo_db]
-                    print()
                     print("udb-mongo connected.")
                 except:
-                    print()
                     print("udb-mongo not connected.")
             else:
                 print("no udb is set on explore")
