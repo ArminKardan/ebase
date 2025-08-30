@@ -41,7 +41,6 @@ import os
 mainloop = None
 
 
-
 def generate_random_file_name(original_name):
     """
     Generates a random filename with the same extension.
@@ -51,7 +50,6 @@ def generate_random_file_name(original_name):
     extension = os.path.splitext(original_name)[1]
     hash_value = secrets.token_hex(12)  # 24-character hex string
     return f"{hash_value}{extension}"
-
 
 
 def encrypt(text: str, password: str) -> str:
@@ -159,7 +157,7 @@ class APISpecs:
 @dataclass
 class MessageSpecs:
     fromjid: str
-    body: str
+    body: str | dict
     role: str
     channel: str
     app: str
@@ -262,7 +260,7 @@ class SetTimeoutSafe:
         try:
             await asyncio.sleep(self.timeout)
             if inspect.iscoroutinefunction(self.callback):
-                print("CALLED")
+                # print("CALLED")
                 mainloop.call_soon_threadsafe(
                     lambda: asyncio.create_task(self.callback())
                 )
@@ -288,10 +286,14 @@ def serial_generator(length: int) -> str:
 
 eventsx = {}
 
+
 def MD5(text: str) -> str:
-    return hashlib.md5(text.encode('utf-8')).hexdigest()
+    return hashlib.md5(text.encode("utf-8")).hexdigest()
+
+
 def SHA256(text: str) -> str:
-    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
 
 class WSX(ClientXMPP):
     connected = False
@@ -303,6 +305,9 @@ class WSX(ClientXMPP):
 
     def __init__(self, jid, password, app: str, uid: str, resource: str):
 
+        appname = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")))
+        workername = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")))
+        
         if "-" in app:
             raise "app should not contain dash '-'"
         if "-" in resource:
@@ -311,7 +316,8 @@ class WSX(ClientXMPP):
         ClientXMPP.__init__(self, jid, password)
         self.app = app
         self.uid = uid
-        self._resource = resource
+        self._resource = f"{workername}.{appname}.dev"
+        
         if os.getenv("RESOURCE"):
             self._resource = os.getenv("RESOURCE")
         self.password = password
@@ -338,7 +344,7 @@ class WSX(ClientXMPP):
         self.send_presence(ptype="presence")
         await self.get_roster()
         # await self.emit("__connect",{})
-        print("[nexus] connected.")
+        print(f"[nexus-{self._resource}] connected.")
         self.connected = True
 
     async def handle_presence(self, presence):
@@ -355,14 +361,14 @@ class WSX(ClientXMPP):
     async def on_disconnect(self, event):
         """Handle disconnection and attempt reconnection."""
         # await self.emit("__disconnect",{})
-        print("[bridge] disconnected.")
+        # print(f"[nexus-{self.resource}] disconnected.")
         self.connected = False
         asyncio.create_task(self.reconnect())
 
     async def reconnect(self):
         await asyncio.sleep(5)
         self.connect(
-            address=("direct.qepal.com", 5222),
+            address=("qepal.com", 5222),
             disable_starttls=False,
             force_starttls=True,
         )
@@ -457,6 +463,8 @@ class WSX(ClientXMPP):
                                 servsecret = self.users[uid].get("secret")
 
                             if res["code"] != -3000:
+                                if json_data["api"] == "ping":
+                                    return {"pong": True, "environment":"python"}
                                 res = await self.onapi(
                                     APISpecs(
                                         **{
@@ -535,6 +543,16 @@ class WSX(ClientXMPP):
                         and ObjectId.is_valid(uid)
                     ):
                         if self.msgreceiver:
+                            try:
+                                body = json.loads(body)
+                                if (
+                                    type(body) == dict
+                                    and body.get("api")
+                                    and body.get("mid")
+                                ):
+                                    return
+                            except:
+                                pass
                             await self.msgreceiver(
                                 MessageSpecs(
                                     **{
@@ -571,8 +589,6 @@ class App:
 
     def decryptor(self, encrypted_b64, password):
         return decrypt(encrypted_b64, password)
-    
-
 
     def run_rest(self):
         self.rest = FastAPI()
@@ -592,25 +608,28 @@ class App:
         thread = threading.Thread(target=run_server, daemon=True)
         thread.start()
 
-    def __init__(self, *, resource: str,
-                 image: str="/files/app/robot.webp",
-                 public: bool, 
-                 rest:bool | int=False):
+    def __init__(
+        self,
+        *,
+        image: str = "/files/app/robot.webp",
+        public: bool,
+        rest: bool | int = False,
+    ):
 
         global mainloop
         mainloop = asyncio.get_event_loop()
 
         def ignore_exit_error(signal, frame):
             sys.exit(0)
-            
+
         if rest == True:
-          self.rest_online = 3000
-          
+            self.rest_online = 3000
+
         elif self.rest_online and os.getenv("PUBLISH"):
             self.rest_online = 3000
         else:
             self.rest_online = rest
-            
+
         signal.signal(signal.SIGINT, ignore_exit_error)
 
         os.system("cls" if os.name == "nt" else "clear")
@@ -620,9 +639,15 @@ class App:
         for p in envs:
             load_dotenv(dotenv_path=p)
         self.channels = set()
-        self.resource = resource
+        
+        appname = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")))
+        workername = os.path.basename(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")))
+        
+        self.resource = f"{workername}.{appname}.dev"
+
         if os.getenv("RESOURCE"):
             self.resource = os.getenv("RESOURCE")
+            
         self.image = image
         self.public = public
         if "-" in self.resource:
@@ -664,8 +689,10 @@ class App:
                     client = MongoClient(mongourl)
                     client.server_info()
                     self.udb = client[mongo_db]
+                    print()
                     print("udb-mongo connected.")
                 except:
+                    print()
                     print("udb-mongo not connected.")
             else:
                 print("no udb is set on explore")
@@ -690,8 +717,10 @@ class App:
                     client = MongoClient(xmongourl)
                     client.server_info()
                     self.xdb = client[xmongo_db]
+                    print()
                     print("xdb-mongo connected.")
                 except:
+                    print()
                     print("xdb-mongo not connected.")
             else:
                 print("no xdb is set on service.")
@@ -717,6 +746,10 @@ class App:
         self.myjid = f"{__json['user']}@qepal.com/{self.resource}"
 
         self.password = __json["password"]
+        # print(
+        #     "trying JID:", self.myjid, self.password, self.app, self.uid, self.resource
+        # )
+        
         self.xmpp = WSX(self.myjid, self.password, self.app, self.uid, self.resource)
 
         def run_event_loop(loop_coroutine):
@@ -759,19 +792,23 @@ class App:
         prioritize_mine: bool = False,
         jid: str = None,
     ):
-        
-        md5 = MD5(json.dumps({
-            "app": app,
-            "onlymine":onlymine,
-            "onlyowner": onlyowner,
-            "resource": resource,
-            "jid": jid,
-            "prioritize_mine": prioritize_mine
-        }))
-                        
+
+        md5 = MD5(
+            json.dumps(
+                {
+                    "app": app,
+                    "onlymine": onlymine,
+                    "onlyowner": onlyowner,
+                    "resource": resource,
+                    "jid": jid,
+                    "prioritize_mine": prioritize_mine,
+                }
+            )
+        )
+
         if jid == None:
-            if (self.jidhash.get(md5)):
-                jid = jidhash[md5]   
+            if self.jidhash.get(md5):
+                jid = jidhash[md5]
             else:
                 res: dict = r.post(
                     "https://qepal.com/api/bridge/worker/findfreeresource",
@@ -809,26 +846,30 @@ class App:
         self,
         *,
         app: str,
-        body:str,
+        body: str,
         onlymine: bool = False,
         onlyowner: bool = False,
         resource: str = None,
         prioritize_mine: bool = False,
         jid: str = None,
     ):
-        
-        md5 = MD5(json.dumps({
-            "app": app,
-            "onlymine":onlymine,
-            "onlyowner": onlyowner,
-            "resource": resource,
-            "jid": jid,
-            "prioritize_mine": prioritize_mine
-        }))
-                        
+
+        md5 = MD5(
+            json.dumps(
+                {
+                    "app": app,
+                    "onlymine": onlymine,
+                    "onlyowner": onlyowner,
+                    "resource": resource,
+                    "jid": jid,
+                    "prioritize_mine": prioritize_mine,
+                }
+            )
+        )
+
         if jid == None:
-            if (self.jidhash.get(md5)):
-                jid = jidhash[md5]   
+            if self.jidhash.get(md5):
+                jid = jidhash[md5]
             else:
                 res: dict = r.post(
                     "https://qepal.com/api/bridge/worker/findfreeresource",
@@ -884,7 +925,6 @@ class App:
             mbody=deflate_to_base64(body),
             mtype="groupchat",
         )
-    
 
     async def proxy(self, *, url: str, bodytype: str, body=None, headers=None):
         headers = headers or {}
@@ -892,11 +932,7 @@ class App:
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 "https://irmapserver.ir/api.php",
-                json={
-                    "url": url,
-                    "body": body,
-                    "headers": headers
-                }
+                json={"url": url, "body": body, "headers": headers},
             ) as resp:
                 data = await resp.json()
 
@@ -905,17 +941,17 @@ class App:
         if bodytype == "binary":
             return {
                 "body": decoded_body,
-                "responseHeaders": data.get("responseHeaders", {})
+                "responseHeaders": data.get("responseHeaders", {}),
             }
         elif bodytype == "string":
             return {
                 "body": decoded_body.decode("utf-8"),
-                "responseHeaders": data.get("responseHeaders", {})
+                "responseHeaders": data.get("responseHeaders", {}),
             }
         elif bodytype == "json":
             return {
                 "body": json.loads(decoded_body.decode("utf-8")),
-                "responseHeaders": data.get("responseHeaders", {})
+                "responseHeaders": data.get("responseHeaders", {}),
             }
         else:
             raise ValueError(f"Unknown bodytype: {bodytype}")
@@ -924,11 +960,7 @@ class App:
         if proxy:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    "https://irmapserver.ir/api.php",
-                    json={
-                        "url": url,
-                        "headers": {}
-                    }
+                    "https://irmapserver.ir/api.php", json={"url": url, "headers": {}}
                 ) as resp:
                     data = await resp.json()
             return base64.b64decode(data["body"])
@@ -944,11 +976,10 @@ class App:
                 print(f"Error downloading from URL: {url} - {e}")
                 raise
 
-
     def uploader(self, content, max_age_sec, extension=None, on_progress=None):
         """
         Uploads a string or bytes as a virtual file.
-        
+
         :param content: The content to upload (str or bytes)
         :param max_age_sec: Expiry time for the file in seconds
         :param extension: Optional file extension (e.g. ".txt")
@@ -962,11 +993,11 @@ class App:
         if extension and not extension.startswith("."):
             extension = "." + extension
 
-        server_url = 'https://cdn.ituring.ir/qeupload/uploader.php'
+        server_url = "https://cdn.ituring.ir/qeupload/uploader.php"
         new_file_name = generate_random_file_name(f"file{extension or '.dat'}")
 
         if isinstance(content, str):
-            content = content.encode('utf-8')
+            content = content.encode("utf-8")
 
         buffer_stream = io.BytesIO(content)
 
@@ -975,23 +1006,30 @@ class App:
                 if on_progress:
                     percent = int((monitor.bytes_read / file_size) * 100)
                     on_progress(min(100, percent))
+
             return hook
 
         file_size = len(content)
         from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
 
         fields = {
-            'uid': str(self.uid),
-            'max_age_sec': str(max_age_sec),
-            'submit': '1',
-            'filesToUpload[]': (new_file_name, buffer_stream, 'application/octet-stream')
+            "uid": str(self.uid),
+            "max_age_sec": str(max_age_sec),
+            "submit": "1",
+            "filesToUpload[]": (
+                new_file_name,
+                buffer_stream,
+                "application/octet-stream",
+            ),
         }
 
         encoder = MultipartEncoder(fields=fields)
         monitor = MultipartEncoderMonitor(encoder, create_progress_hook(file_size))
 
         try:
-            response = requests.post(server_url, data=monitor, headers={'Content-Type': monitor.content_type})
+            response = requests.post(
+                server_url, data=monitor, headers={"Content-Type": monitor.content_type}
+            )
             response.raise_for_status()
 
             return f"https://cdn.ituring.ir/qeupload/{self.uid}/{new_file_name}"
@@ -1004,7 +1042,6 @@ class App:
                 print("Error message:", str(e))
             return None
 
-
     async def __loop(self):
 
         ssl_ctx = ssl.create_default_context()
@@ -1013,7 +1050,7 @@ class App:
         self.xmpp.ssl_context = ssl_ctx
 
         self.xmpp.connect(
-            address=("direct.qepal.com", 5222),
+            address=("qepal.com", 5222),
             disable_starttls=False,
             force_starttls=True,
         )
@@ -1023,5 +1060,3 @@ class App:
         except KeyboardInterrupt:
             print("Exiting the application...")
             sys.exit()
-
-
