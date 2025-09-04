@@ -10,6 +10,7 @@
     "**/python": true,
     "**/.venv": true,
     "**/sys": true,
+    "**/.gitignore": true,
     "**/.vscode": true
   }
 }

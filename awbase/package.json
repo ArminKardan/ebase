@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node --transpileOnly ./run.js",
+    "dev": "ts-node --transpileOnly ./run.ts",
     "build": ""
   }
 }
