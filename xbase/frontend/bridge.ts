@@ -43,8 +43,7 @@ declare global {
             app: string,
             cmd: string,
             body?: any,
-            onlymine?: boolean,
-            onlyowner?: boolean,
+            ownership?:"mine"|"owner",
             resource?: string,
             prioritize_mine?: boolean
             jid?: string,
@@ -53,8 +52,7 @@ declare global {
         direct: (specs: {
             app: string,
             body: string,
-            onlymine?: boolean,
-            onlyowner?: boolean,
+            ownership?:"mine"|"owner",
             resource?: string,
             prioritize_mine?: boolean
             jid?: string,

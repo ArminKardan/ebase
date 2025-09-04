@@ -108,8 +108,7 @@ export default async () => {
                 app: string,
                 cmd: string,
                 body?: any,
-                onlymine?: boolean,
-                onlyowner?: boolean,
+                ownership?: "mine" | "owner",
                 resource?: string,
                 prioritize_mine?: boolean
                 jid?: string,
@@ -117,8 +116,7 @@ export default async () => {
 
                 let md5 = MD5(JSON.stringify({
                     app: specs.app,
-                    onlymine: specs.onlymine,
-                    onlyowner: specs.onlyowner,
+                    ownership: specs.ownership,
                     resource: specs.resource,
                     jid: specs.jid,
                     prioritize_mine: specs.prioritize_mine
@@ -135,11 +133,13 @@ export default async () => {
                             {
                                 app: specs.app,
                                 secret: process.env.EXPLORE_SECRET || process.env.SERVICE_SECRET,
-                                onlymine: specs.onlymine,
-                                onlyowner: specs.onlyowner,
+                                ownership: specs.ownership,
                                 resource: specs.resource,
                             })
-                        let jids = json.jids
+                        if (json.code != 0) {
+                            return { code: -2000, msg: "no free worker found." } as any
+                        }
+                        let jids = json["jids"]
                         if (jids.length > 0) {
                             jid = specs.prioritize_mine ? jids[0] : jids.at(-1);
                             if (jid)
@@ -186,16 +186,14 @@ export default async () => {
             direct: async (specs: {
                 app: string,
                 body: string,
-                onlymine?: boolean,
-                onlyowner?: boolean,
+                ownership?: "mine" | "owner",
                 resource?: string,
                 prioritize_mine?: boolean
                 jid?: string,
             }) => {
                 let md5 = MD5(JSON.stringify({
                     app: specs.app,
-                    onlymine: specs.onlymine,
-                    onlyowner: specs.onlyowner,
+                    ownership: specs.ownership,
                     resource: specs.resource,
                     jid: specs.jid,
                     prioritize_mine: specs.prioritize_mine
@@ -212,11 +210,13 @@ export default async () => {
                             {
                                 app: specs.app,
                                 secret: process.env.EXPLORE_SECRET || process.env.SERVICE_SECRET,
-                                onlymine: specs.onlymine,
-                                onlyowner: specs.onlyowner,
+                                ownership: specs.ownership,
                                 resource: specs.resource,
                             })
-                        let jids = json.jids
+                        if (json.code != 0) {
+                            return { code: -2000, msg: "no free worker found." } as any
+                        }
+                        let jids = json["jids"]
                         if (jids.length > 0) {
                             jid = specs.prioritize_mine ? jids[0] : jids.at(-1);
                             if (jid)
@@ -325,14 +325,15 @@ export default async () => {
             if (stanza.is("message")) {
                 let bdd = stanza.getChildText("body");
                 try { bdd = inflateFromBase64(bdd) } catch { }
-                const body = bdd;
+                let body = bdd;
                 const from = stanza.attrs.from;
                 const itsme = (from as string).includes(app + "-" + uid + "-" + role + "-" + resource)
                 const itsbro = !itsme && (from as string).includes(app + "-" + uid)
                 if (body && !stanza.getChild('delay')) {
 
                     let json = null;
-                    if (body.startsWith("{")) {
+                    body = body.trim();
+                    if (body.startsWith("{") || body.startsWith("[")) {
                         try {
                             json = JSON.parse(body);
                             if (json.mid && global.xmppapicb_bk[json.mid]) {

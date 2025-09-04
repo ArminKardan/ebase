@@ -841,8 +841,7 @@ class App:
         app: str,
         cmd: str,
         body={},
-        onlymine: bool = False,
-        onlyowner: bool = False,
+        ownership:str  = "owner",
         resource: str = None,
         prioritize_mine: bool = False,
         jid: str = None,
@@ -852,8 +851,7 @@ class App:
             json.dumps(
                 {
                     "app": app,
-                    "onlymine": onlymine,
-                    "onlyowner": onlyowner,
+                    "ownership": ownership,
                     "resource": resource,
                     "jid": jid,
                     "prioritize_mine": prioritize_mine,
@@ -870,8 +868,7 @@ class App:
                     json={
                         "app": app,
                         "secret": self.secret,
-                        "onlymine": onlymine,
-                        "onlyowner": onlyowner,
+                        "ownership": ownership,
                         "resource": resource,
                     },
                 ).json()
@@ -906,8 +903,7 @@ class App:
         *,
         app: str,
         body: str | dict | list,
-        onlymine: bool = False,
-        onlyowner: bool = False,
+        ownership: str = "owner",
         resource: str = None,
         prioritize_mine: bool = False,
         jid: str = None,
@@ -917,8 +913,7 @@ class App:
             json.dumps(
                 {
                     "app": app,
-                    "onlymine": onlymine,
-                    "onlyowner": onlyowner,
+                    "ownership": ownership,
                     "resource": resource,
                     "jid": jid,
                     "prioritize_mine": prioritize_mine,
@@ -935,8 +930,7 @@ class App:
                     json={
                         "app": app,
                         "secret": self.secret,
-                        "onlymine": onlymine,
-                        "onlyowner": onlyowner,
+                        "ownership": ownership,
                         "resource": resource,
                     },
                 ).json()

@@ -220,8 +220,7 @@ export namespace App {
                 app: string,
                 cmd: string,
                 body?: any,
-                onlymine?: boolean,
-                onlyowner?: boolean,
+                ownership?: "mine" | "owner",
                 resource?: string,
                 prioritize_mine?: boolean
                 jid?: string,
@@ -229,8 +228,7 @@ export namespace App {
 
                 let md5 = MD5(JSON.stringify({
                     app: specs.app,
-                    onlymine: specs.onlymine,
-                    onlyowner: specs.onlyowner,
+                    ownership: specs.ownership,
                     resource: specs.resource,
                     jid: specs.jid,
                     prioritize_mine: specs.prioritize_mine
@@ -247,11 +245,13 @@ export namespace App {
                             {
                                 app: specs.app,
                                 secret: process.env.EXPLORE_SECRET || process.env.SERVICE_SECRET,
-                                onlymine: specs.onlymine,
-                                onlyowner: specs.onlyowner,
+                                ownership: specs.ownership,
                                 resource: specs.resource,
                             })
-                        let jids = json.jids
+                        if (json.code != 0) {
+                            return { code: -2000, msg: "no fref worker found." } as any
+                        }
+                        let jids = json["jids"]
                         if (jids.length > 0) {
                             jid = specs.prioritize_mine ? jids[0] : jids.at(-1);
                         }
@@ -300,8 +300,7 @@ export namespace App {
             direct: async (specs: {
                 app: string,
                 body: string,
-                onlymine?: boolean,
-                onlyowner?: boolean,
+                ownership?: "mine" | "owner",
                 resource?: string,
                 prioritize_mine?: boolean
                 jid?: string,
@@ -309,8 +308,7 @@ export namespace App {
 
                 let md5 = MD5(JSON.stringify({
                     app: specs.app,
-                    onlymine: specs.onlymine,
-                    onlyowner: specs.onlyowner,
+                    ownership: specs.ownership,
                     resource: specs.resource,
                     jid: specs.jid,
                     prioritize_mine: specs.prioritize_mine
@@ -327,11 +325,16 @@ export namespace App {
                             {
                                 app: specs.app,
                                 secret: process.env.EXPLORE_SECRET || process.env.SERVICE_SECRET,
-                                onlymine: specs.onlymine,
-                                onlyowner: specs.onlyowner,
+                                ownership: specs.ownership,
                                 resource: specs.resource,
                             })
-                        let jids = json.jids
+
+                        if (json.code != 0) {
+                            return { code: -2000, msg: "no fref worker found." } as any
+                        }
+
+                        let jids = json["jids"]
+                        
                         if (jids.length > 0) {
                             jid = specs.prioritize_mine ? jids[0] : jids.at(-1);
                         }
@@ -383,7 +386,6 @@ export namespace App {
                 }
                 let subs = global.nexus.channels as Set<string>
                 if (!subs.has(channel)) {
-
                     await global.nexus.subscribe(channel);
                     await sleep(500)
                 }
@@ -399,8 +401,6 @@ export namespace App {
                     )))
             },
         }
-
-
     }
 
     let Events: Array<{ api: string, cb: (specs: { body: any, role: "owner" | "partner" | "user", uid: string, servid: string, servsecret: string, app: string, resource: string }) => any }> = [];
@@ -569,7 +569,7 @@ export namespace App {
         global.uid = ObjectId.createFromHexString(json.uid)
         global.myjid = json.user + "@qepal.com/" + global.resource
 
-        c = { app: json.app, image: config.image, public: config.public, resource:global.resource }
+        c = { app: json.app, image: config.image, public: config.public, resource: global.resource }
 
         if (global.wsdebug) console.log("Connect function calling...")
 
@@ -678,7 +678,7 @@ export namespace App {
                     if (body && !stanza.getChild('delay')) {
 
                         let json = null
-                        if (body.startsWith("{")) {
+                        if (body.trim().startsWith("{") || body.trim().startsWith("[")) {
                             try {
                                 json = JSON.parse(body);
                                 if (json.api && !from.includes("@conference.qepal.com")) {
@@ -842,7 +842,7 @@ export namespace App {
 
 
             App.on("ping", async (specs) => {
-                console.log("ping request from:", specs.uid)
+                // console.log("ping request from:", specs.uid)
                 return { code: 0, pong: true }
             })
         })

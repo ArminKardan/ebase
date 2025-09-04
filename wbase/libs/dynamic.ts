@@ -1,5 +1,26 @@
 export type UnitName = "usd" | "eur" | "gbp" | "usdt" | "toman" | "aud" | "tron" | "usdc" | "cad" | "rial"
 
+
+type LLMChatCompletionInputType = {
+    messages: Array<{ role: "system" | "user", content: string }>,
+    temperature?: number,
+    top_p?: number,
+    max_tokens?: number,
+    presence_penalty?: number,
+    frequency_penalty?: number
+}
+
+type LLMImageClassifierInputType = {
+    image_url: string,
+    classes: Array<string>,
+    temperature?: number,
+    top_p?: number,
+    max_tokens?: number,
+    presence_penalty?: number,
+    frequency_penalty?: number
+}
+
+
 declare global {
     interface NX {
         "agent":
@@ -10,15 +31,17 @@ declare global {
             }) =>
                 Promise<string>,
 
-            gpt35: (specs: {
-                prompts: Array<string>,
-            }) =>
-                Promise<string>
+            llms: {
+                "chatCompletion": {
+                    gpt35: (specs: { prompts: Array<string> }) => Promise<string>,
+                    gpt4o: (specs: { prompts: Array<string> }) => Promise<string>,
+                    gemma34BQ8: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: {} }>
+                },
+                "imagelassifier": {
+                    gemma34BQ8: (specs: LLMImageClassifierInputType) => Promise<{ code: number, classes: Array<string>, usage: {} }>
+                }
+            },
 
-            gpt4o: (specs: {
-                prompts: Array<string>,
-            }) =>
-                Promise<string>,
 
             sms: {
                 confirm: (phone: string, code: string) => Promise<{ code: number, msg: string }>,
@@ -63,8 +86,8 @@ declare global {
 export const Loopez = () => {
     if (!global.nexus)
         return
-    if (!global.nexus.agent) {
-        global.nexus.agent = {} as any
+    if (!global.nexus.agent || !global.nexus.agent.llms) {
+        global.nexus.agent = { llms: { chatCompletion: {}, imagelassifier: {} } } as any
     }
 
     if (!global.nexus.agent.poster) {
@@ -92,7 +115,7 @@ export const Loopez = () => {
                     subtext: specs.subtext,
                     technologies,
                     lang: "fa",
-                }, onlyowner: true
+                }
             })
 
             return json
@@ -104,7 +127,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "translate-" + specs.engine, body: {
                     source: specs.from, target: specs.to, text: specs.text
-                }, onlyowner: true
+                }
             })
             if (json.status == 200) {
                 return json.result
@@ -119,7 +142,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "translate-" + specs.engine, body: {
                     source: specs.from, target: specs.to, text: specs.text
-                }, onlyowner: true
+                }
             })
             if (json.status == 200) {
                 return json.result
@@ -128,12 +151,33 @@ export const Loopez = () => {
         }
     }
 
-    if (!global.nexus.agent.gpt35) {
-        global.nexus.agent.gpt35 = async (specs) => {
+    if (!global.nexus.agent.llms.chatCompletion.gemma34BQ8) {
+        global.nexus.agent.llms.chatCompletion.gemma34BQ8 = async (specs) => {
+            let json = await nexus.api({ app: "egemma3x4bxq8", cmd: "completions", body: specs })
+            if (json.code == 200) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.imagelassifier.gemma34BQ8) {
+        global.nexus.agent.llms.chatCompletion.gemma34BQ8 = async (specs) => {
+            let json = await nexus.api({ app: "egemma3x4bxq8", cmd: "imageclassify", body: specs })
+            if (json.code == 200) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+    if (!global.nexus.agent.llms.chatCompletion.gpt4o) {
+        global.nexus.agent.llms.chatCompletion.gpt4o = async (specs) => {
             let json = await nexus.api({
                 app: "eagents", cmd: "gpt35", body: {
                     prompts: specs.prompts,
-                }, onlyowner: true
+                }
             })
             if (json.status == 200) {
                 return json.result[0]
@@ -142,13 +186,12 @@ export const Loopez = () => {
         }
     }
 
-
-    if (!global.nexus.agent.gpt4o) {
-        global.nexus.agent.gpt4o = async (specs) => {
+    if (!global.nexus.agent.llms.chatCompletion.gpt35) {
+        global.nexus.agent.llms.chatCompletion.gpt35 = async (specs) => {
             let json = await nexus.api({
-                app: "eagents", cmd: "gpt4o", body: {
+                app: "eagents", cmd: "gpt35", body: {
                     prompts: specs.prompts,
-                }, onlyowner: true
+                }
             })
             if (json.status == 200) {
                 return json.result[0]
@@ -163,7 +206,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "email-send", body: {
                     to, subject, message
-                }, onlyowner: true
+                }
             })
             return json
         }
@@ -174,7 +217,7 @@ export const Loopez = () => {
             let json = await nexus.api({
                 app: "eagents", cmd: "sms-confirm", body: {
                     phone, code
-                }, onlyowner: true
+                }
             })
 
             return json
@@ -182,9 +225,10 @@ export const Loopez = () => {
 
         global.nexus.agent.sms.modem = async (phone, text) => {
             let json = await nexus.api({
-                app: "esms", cmd: "send", body: {
+                app: "eagents", cmd: "sendsms-modem",
+                body: {
                     phone, text
-                }, onlyowner: true
+                }
             })
 
             return json
@@ -196,7 +240,7 @@ export const Loopez = () => {
         global.nexus.agent.ssh = {
             ping: async () => {
                 let json = await nexus.api({
-                    app: "essh", cmd: "ping", onlyowner: true
+                    app: "essh", cmd: "ping",
                 })
                 return json;
             },
@@ -210,7 +254,7 @@ export const Loopez = () => {
                         password: specs.password,
                         salt: specs.salt,
                         timeout: specs.timeout || 300,
-                    }, onlyowner: true
+                    },
                 })
                 return json
             },
@@ -219,7 +263,7 @@ export const Loopez = () => {
                     app: "essh", cmd: "disconnect",
                     body: {
                         channelid: specs.channelid,
-                    }, onlyowner: true
+                    },
                 })
                 return json;
             },
@@ -229,7 +273,7 @@ export const Loopez = () => {
                     body: {
                         channelid: specs.channelid,
                         command: specs.input
-                    }, onlyowner: true
+                    },
                 })
                 return json
             },
