@@ -167,14 +167,28 @@ export default async (z: ZType) => {
 
             direct: async (specs: {
                 app: string,
-                body: string,
+                body: any,
                 ownership?: "mine" | "owner",
                 resource?: string,
                 prioritize_mine?: boolean
                 jid?: string,
             }) => {
+                specs.body = JSON.stringify(specs.body)
+
+                let md5 = MD5(JSON.stringify({
+                    app: specs.app,
+                    ownership: specs.ownership,
+                    resource: specs.resource,
+                    jid: specs.jid,
+                    prioritize_mine: specs.prioritize_mine
+                }))
+
                 let jid = specs.jid
                 if (!jid) {
+                    if (global.jidhash[md5]) {
+                        jid = global.jidhash[md5]
+                    }
+
                     let json = await api("https://qepal.com/api/bridge/worker/findfreeresource",
                         {
                             app: specs.app,
@@ -208,9 +222,9 @@ export default async (z: ZType) => {
 
 
             sendtojid: async (jid: string, body: any) => {
-                if (typeof body != "string") {
-                    body = JSON.stringify(body)
-                }
+                
+                body = JSON.stringify(body)
+
                 let bd = deflateToBase64(body)
                 if (bd.length > 4096) {
                     return "too large, max: 4Kbytes";
@@ -222,9 +236,9 @@ export default async (z: ZType) => {
                     )))
             },
             sendtochannel: async (channel: string, body: any) => {
-                if (typeof body != "string") {
-                    body = JSON.stringify(body)
-                }
+
+                body = JSON.stringify(body)
+
                 let bd = deflateToBase64(body)
                 if (bd.length > 4096) {
                     return "too large, max: 4Kbytes";
@@ -377,7 +391,7 @@ export default async (z: ZType) => {
                             }
                         }
                         if (valid) {
-                            global.nexus.msgreceiver({ fromjid: from, body, role, channel, app, uid, resource, itsme, itsbro });
+                            global.nexus.msgreceiver({ fromjid: from, body:json, role, channel, app, uid, resource, itsme, itsbro });
                             if (!itsme && json) {
                                 if (global.xmpp_on_pool && global.xmpp_on_pool.length > 0) {
                                     for (let p of global.xmpp_on_pool) {

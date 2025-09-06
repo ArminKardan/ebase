@@ -829,7 +829,8 @@ class App:
     def on(self, api: str, cb: callable):
         self.nexus.on(api, cb)
 
-    def sendtojid(self, jid: str, body: str):
+    def sendtojid(self, jid: str, body: dict|list):
+        body = json.dumps(body)
         self.nexus.send_message(mto=jid, mbody=deflate_to_base64(body))
 
     def connected(self):
@@ -902,13 +903,14 @@ class App:
         self,
         *,
         app: str,
-        body: str | dict | list,
+        body:  dict | list,
         ownership: str = "owner",
         resource: str = None,
         prioritize_mine: bool = False,
         jid: str = None,
     ):
 
+        body = json.dumps(body)
         md5 = MD5(
             json.dumps(
                 {
@@ -969,7 +971,9 @@ class App:
         self.nexus.get_roster()
         self.channels.remove(channelname)
 
-    def sendtochannel(self, channelname: str, body: str | dict | list):
+    def sendtochannel(self, channelname: str, body:  dict | list):
+        body = json.dumps(body)
+        
         if channelname not in self.channels:
             self.subscribe(channelname)
         if type(body) == dict or type(body) == list:

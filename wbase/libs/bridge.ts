@@ -249,7 +249,7 @@ export namespace App {
                                 resource: specs.resource,
                             })
                         if (json.code != 0) {
-                            return { code: -2000, msg: "no fref worker found." } as any
+                            return { code: -2000, msg: "no free worker found." } as any
                         }
                         let jids = json["jids"]
                         if (jids.length > 0) {
@@ -299,13 +299,14 @@ export namespace App {
 
             direct: async (specs: {
                 app: string,
-                body: string,
+                body: any,
                 ownership?: "mine" | "owner",
                 resource?: string,
                 prioritize_mine?: boolean
                 jid?: string,
             }) => {
-
+                
+                specs.body = JSON.stringify(specs.body)
                 let md5 = MD5(JSON.stringify({
                     app: specs.app,
                     ownership: specs.ownership,
@@ -330,11 +331,11 @@ export namespace App {
                             })
 
                         if (json.code != 0) {
-                            return { code: -2000, msg: "no fref worker found." } as any
+                            return { code: -2000, msg: "no free worker found." } as any
                         }
 
                         let jids = json["jids"]
-                        
+
                         if (jids.length > 0) {
                             jid = specs.prioritize_mine ? jids[0] : jids.at(-1);
                         }
@@ -363,9 +364,7 @@ export namespace App {
 
 
             sendtojid: async (jid: string, body: any) => {
-                if (typeof body != "string") {
-                    body = JSON.stringify(body)
-                }
+                body = JSON.stringify(body)
                 let bd = zlib.deflateSync(body).toString('base64')
                 if (bd.length > 4096) {
                     return "too large, max: 4Kbytes";
@@ -377,9 +376,7 @@ export namespace App {
                     )))
             },
             sendtochannel: async (channel: string, body: any) => {
-                if (typeof body != "string") {
-                    body = JSON.stringify(body)
-                }
+                body = JSON.stringify(body)
                 let bd = zlib.deflateSync(body).toString('base64')
                 if (bd.length > 4096) {
                     return "too large, max: 4Kbytes";
@@ -800,7 +797,7 @@ export namespace App {
                             }
                             if (heads.length == 3 || heads.length == 4) {
                                 if (uid.length == 24 && ObjectId.isValid(uid)) {
-                                    global.nexus.msgreceiver({ fromjid: from, body, role, channel, app, uid, resource, itsme, itsbro })
+                                    global.nexus.msgreceiver({ fromjid: from, body:json, role, channel, app, uid, resource, itsme, itsbro })
 
                                     if (!itsme && json) {
                                         if (global.xmpp_on_pool && global.xmpp_on_pool.length > 0) {

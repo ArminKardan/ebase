@@ -11,7 +11,7 @@ declare global {
         uid: string,
         resource: string,
         role: "owner" | "partner" | "user",
-        body: string,
+        body: any,
         itsme: boolean,
         itsbro: boolean,
         channel: string
@@ -51,14 +51,14 @@ declare global {
         ) => Promise<any>,
         direct: (specs: {
             app: string,
-            body: string,
+            body: any,
             ownership?:"mine"|"owner",
             resource?: string,
             prioritize_mine?: boolean
             jid?: string,
         }) => Promise<any>,
-        sendtojid: (jid: string, body: string) => Promise<any>,
-        sendtochannel: (channel: string, body: string) => Promise<any>,
+        sendtojid: (jid: string, body: any) => Promise<any>,
+        sendtochannel: (channel: string, body: any) => Promise<any>,
 
     }
     var nexus: NX
