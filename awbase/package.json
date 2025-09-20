@@ -1,0 +1,10 @@
+{
+  "name": "ebase-awbase",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ./run.js",
+    "build": ""
+  },
+  "v2": true
+}
