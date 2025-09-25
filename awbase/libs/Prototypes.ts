@@ -49,7 +49,7 @@ declare global {
             app: string,
             resource?: string,
             ownership?: "mine" | "owner",
-        }) => Promise<Array<string>>,
+        }) => Promise<{code:number, jids:Array<string>}>,
         api: (specs: {
             app: string,
             cmd: string,
