@@ -216,6 +216,25 @@ export namespace App {
             msgreceiver: () => { },
             connected: false,
 
+            find: async (specs: {
+                app: string,
+                resource?: string,
+                ownership?: "mine" | "owner",
+            }) => {
+                let json = await api("https://qepal.com/api/bridge/worker/findfreeresource",
+                    {
+                        app: specs.app,
+                        secret: process.env.EXPLORE_SECRET || process.env.SERVICE_SECRET,
+                        ownership: specs.ownership,
+                        resource: specs.resource,
+                    })
+                if (json.code != 0) {
+                    return { code: -2000, msg: "no free worker found." } as any
+                }
+                let jids = json["jids"]
+                return { code: 0, jids }
+            },
+
             api: async (specs: {
                 app: string,
                 cmd: string,
@@ -305,7 +324,7 @@ export namespace App {
                 prioritize_mine?: boolean
                 jid?: string,
             }) => {
-                
+
                 specs.body = JSON.stringify(specs.body)
                 let md5 = MD5(JSON.stringify({
                     app: specs.app,
@@ -540,7 +559,10 @@ export namespace App {
         }
         if (process.env.SERVICE_SECRET) {
             secret = process.env.SERVICE_SECRET
+
         }
+
+        global.resource += "." + Math.floor(1000 + Math.random() * 999)
 
         if (!secret) {
             throw "No service or explore secret code found in envs."
@@ -797,7 +819,7 @@ export namespace App {
                             }
                             if (heads.length == 3 || heads.length == 4) {
                                 if (uid.length == 24 && ObjectId.isValid(uid)) {
-                                    global.nexus.msgreceiver({ fromjid: from, body:json, role, channel, app, uid, resource, itsme, itsbro })
+                                    global.nexus.msgreceiver({ fromjid: from, body: json, role, channel, app, uid, resource, itsme, itsbro })
 
                                     if (!itsme && json) {
                                         if (global.xmpp_on_pool && global.xmpp_on_pool.length > 0) {

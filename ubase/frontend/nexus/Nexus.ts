@@ -112,6 +112,24 @@ export default async (z: ZType) => {
             channels: new Set(),
             msgreceiver: () => { },
             connected: false,
+            find: async (specs: {
+                app: string,
+                resource?: string,
+                ownership?: "mine" | "owner",
+            }) => {
+                let json = await api("https://qepal.com/api/bridge/worker/findfreeresource",
+                    {
+                        app: specs.app,
+                        secret: z.middleuser.servsecret,
+                        ownership: specs.ownership,
+                        resource: specs.resource,
+                    })
+                if (json.code != 0) {
+                    return { code: -2000, msg: "no free worker found." } as any
+                }
+                let jids = json["jids"]
+                return { code: 0, jids }
+            },
             api: async (specs: {
                 app: string,
                 cmd: string,

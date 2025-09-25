@@ -46,7 +46,7 @@ export default (props: {
     });
 
     return <div className='flex flex-col' style={{ width: "100%", flex:1 }}>
-        <div style={{ fontSize: 12, }}>{props.bold ? <Bold>{props.title}</Bold> : props.title}</div>
+        <div style={{ fontSize: 11, }}>{props.bold ? <Bold>{props.title}</Bold> : props.title}</div>
         <textarea dir="auto" key={uniqekey++} defaultValue={props.defaultValue} spellCheck={false} placeholder={props.placeholder}
             ref={ref}
             rows={1}

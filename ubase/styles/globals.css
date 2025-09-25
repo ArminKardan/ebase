@@ -36,6 +36,11 @@ p {
   margin: 0;
 }
 
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+}
 
 
 h1 {

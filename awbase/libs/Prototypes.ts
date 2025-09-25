@@ -45,6 +45,11 @@ declare global {
             channel: (channelname: string, cb: (specs: NexusOnReceiveType) => Promise<any>) => string,
         },
         clearon: (cbid: string) => void,
+        find: (specs: {
+            app: string,
+            resource?: string,
+            ownership?: "mine" | "owner",
+        }) => Promise<Array<string>>,
         api: (specs: {
             app: string,
             cmd: string,

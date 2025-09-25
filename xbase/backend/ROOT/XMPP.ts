@@ -110,7 +110,24 @@ export default async () => {
             channels: new Set(),
             msgreceiver: () => { },
             connected: false,
-
+            find: async (specs: {
+                app: string,
+                resource?: string,
+                ownership?: "mine" | "owner",
+            }) => {
+                let json = await api("https://qepal.com/api/bridge/worker/findfreeresource",
+                    {
+                        app: specs.app,
+                        secret: process.env.EXPLORE_SECRET || process.env.SERVICE_SECRET,
+                        ownership: specs.ownership,
+                        resource: specs.resource,
+                    })
+                if (json.code != 0) {
+                    return { code: -2000, msg: "no free worker found." } as any
+                }
+                let jids = json["jids"]
+                return { code: 0, jids }
+            },
             api: async (specs: {
                 app: string,
                 cmd: string,
@@ -388,7 +405,7 @@ export default async () => {
                             }
                         }
                         if (valid) {
-                            global.nexus.msgreceiver({ fromjid: from, body:json, role, channel, app, uid, resource, itsme, itsbro });
+                            global.nexus.msgreceiver({ fromjid: from, body: json, role, channel, app, uid, resource, itsme, itsbro });
                             if (!itsme && json) {
                                 if (global.xmpp_on_pool && global.xmpp_on_pool.length > 0) {
                                     for (let p of global.xmpp_on_pool) {

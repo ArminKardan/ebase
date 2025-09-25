@@ -55,6 +55,11 @@ declare global {
             jid?: string,
         }
         ) => Promise<any>,
+        find: (specs: {
+            app: string,
+            resource?: string,
+            ownership?: "mine" | "owner",
+        }) => Promise<{code:number, jids:Array<string>}>,
         direct: (specs: {
             app: string,
             body: any,

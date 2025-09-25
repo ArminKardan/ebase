@@ -829,12 +829,35 @@ class App:
     def on(self, api: str, cb: callable):
         self.nexus.on(api, cb)
 
-    def sendtojid(self, jid: str, body: dict|list):
-        body = json.dumps(body)
+    def sendtojid(self, jid: str, body: str):
         self.nexus.send_message(mto=jid, mbody=deflate_to_base64(body))
 
     def connected(self):
         return self.nexus.connected
+
+    async def find(
+        self,
+        *,
+        app: str,
+        ownership:str  = "owner",
+        resource: str = None
+    ):
+
+        res: dict = r.post("https://qepal.com/api/bridge/worker/findfreeresource",
+                json={
+                        "app": app,
+                        "secret": self.secret,
+                        "ownership": ownership,
+                        "resource": resource,
+                    },
+                ).json()
+
+        jids = list(res.get("jids", []))
+        if len(jids) > 0:
+                return {"code":0, "jids": jids}
+        else:
+            return {"code":-2000, "error": "no free worker found."}
+
 
     async def api(
         self,
@@ -881,7 +904,7 @@ class App:
                     else:
                         jid = jids[-1]
         if jid == None:
-            return {"error": "no worker found"}
+            return {"code":-2000, "error": "no free worker found"}
 
         mid = SerialGenerator(10)
         msg = {"mid": mid, "api": cmd, **body}
@@ -903,14 +926,13 @@ class App:
         self,
         *,
         app: str,
-        body:  dict | list,
+        body: str | dict | list,
         ownership: str = "owner",
         resource: str = None,
         prioritize_mine: bool = False,
         jid: str = None,
     ):
 
-        body = json.dumps(body)
         md5 = MD5(
             json.dumps(
                 {
@@ -944,7 +966,7 @@ class App:
                     else:
                         jid = jids[-1]
         if jid == None:
-            return {"error": "no worker found"}
+            return {"code":-2000, "error": "no worker found"}
 
         if type(body) == dict or type(body) == list:
             body = json.dumps(body)
@@ -971,9 +993,7 @@ class App:
         self.nexus.get_roster()
         self.channels.remove(channelname)
 
-    def sendtochannel(self, channelname: str, body:  dict | list):
-        body = json.dumps(body)
-        
+    def sendtochannel(self, channelname: str, body: str | dict | list):
         if channelname not in self.channels:
             self.subscribe(channelname)
         if type(body) == dict or type(body) == list:

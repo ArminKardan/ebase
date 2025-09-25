@@ -20,6 +20,20 @@ type LLMImageClassifierInputType = {
     frequency_penalty?: number
 }
 
+type LLMCustomInputType = {
+    policy:
+    {
+        name: string,
+        worksfor: string,
+        context: string,
+        commands: Array<string>,
+        tone: "formal" | "casual" | "inquisitive" | "assertive" | "emotional" | "angry"
+    },
+    input: string
+}
+
+
+type LLMTextClassificationInput = { categories: Array<{ key: string, trigger: string }>, memory: Array<string>, inputtext: string }
 
 declare global {
     interface NX {
@@ -32,14 +46,47 @@ declare global {
                 Promise<string>,
 
             llms: {
-                "chatCompletion": {
-                    gpt35: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: {} }>,
-                    gpt4o: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: {} }>,
-                    gemma34BQ8: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: {} }>,
-                    gemma312BQ4: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: {} }>,
+                "toneRecognition": {
+                    light: (input: string) => Promise<{ code: number, tone: "formal" | "casual" | "inquisitive" | "assertive" | "emotional" | "offensive" }>,
+                    v2: (input: string) => Promise<{ code: number, tone: "formal" | "casual" | "inquisitive" | "assertive" | "emotional" | "offensive" }>,
+                    v3: (input: string) => Promise<{ code: number, tone: "formal" | "casual" | "inquisitive" | "assertive" | "emotional" | "offensive" }>,
                 },
-                "imagelassifier": {
-                    gemma34BQ8: (specs: LLMImageClassifierInputType) => Promise<{ code: number, classes: Array<string>, usage: {} }>
+                "chatCompletion": {
+                    gpt4: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                    gpt5: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                    gemma34BQ8: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                    gemma312BQ4: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                    oss20B: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                    oss36B: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                    oss120B: (specs: LLMChatCompletionInputType) => Promise<{ code: number, response: string, usage: any }>,
+                },
+                "customAnswer": {
+                    gpt4: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                    gpt5: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                    gemma34BQ8: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                    gemma312BQ4: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                    oss20B: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                    oss36B: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                    oss120B: (specs: LLMCustomInputType) => Promise<{ code: number, answer: string, usage: any }>,
+                },
+                "fillStructure": {
+                    light: (specs: { schema: { [key in string]: any }, input: string }) => Promise<{ code: number, data: any }>,
+                    v2: (specs: { schema: { [key in string]: any }, input: string }) => Promise<{ code: number, data: any }>,
+                    v3: (specs: { schema: { [key in string]: any }, input: string }) => Promise<{ code: number, data: any }>,
+                },
+                "textClassifier": {
+                    light: (specs: LLMTextClassificationInput) => Promise<{ code: number, categories: Array<string> }>,
+                    v2: (specs: LLMTextClassificationInput) => Promise<{ code: number, categories: Array<string> }>,
+                    v3: (specs: LLMTextClassificationInput) => Promise<{ code: number, categories: Array<string> }>,
+                },
+                "dataBaseAnswer": {
+                    light: (specs: { data: any, input: string }) => Promise<{ code: number, answer: string }>,
+                    v2: (specs: { data: any, input: string }) => Promise<{ code: number, answer: string }>,
+                    v3: (specs: { data: any, input: string }) => Promise<{ code: number, answer: string }>,
+                },
+                "imageClassifier": {
+                    gemma34BQ8: (specs: LLMImageClassifierInputType) => Promise<{ code: number, classes: Array<string>, usage: any }>
+                    gemma312BQ4: (specs: LLMImageClassifierInputType) => Promise<{ code: number, classes: Array<string>, usage: any }>
                 }
             },
 
@@ -88,7 +135,12 @@ export const Loopez = () => {
     if (!global.nexus)
         return
     if (!global.nexus.agent || !global.nexus.agent.llms) {
-        global.nexus.agent = { llms: { chatCompletion: {}, imagelassifier: {} } } as any
+        global.nexus.agent = {
+            llms: {
+                chatCompletion: {}, dataBaseAnswer: {}, customAnswer: {},
+                imageClassifier: {}, textClassifier: {}, fillStructure: {}, toneRecognition: {}
+            }
+        } as any
     }
 
     if (!global.nexus.agent.poster) {
@@ -152,29 +204,8 @@ export const Loopez = () => {
         }
     }
 
-    if (!global.nexus.agent.llms.chatCompletion.gemma34BQ8) {
-        global.nexus.agent.llms.chatCompletion.gemma34BQ8 = async (specs) => {
-            let json = await nexus.api({ app: "egemma3x4bxq8", cmd: "completions", body: specs })
-            if (json.code == 0) {
-                return json
-            }
-            return null
-        }
-    }
-
-    if (!global.nexus.agent.llms.chatCompletion.gemma312BQ4) {
-        global.nexus.agent.llms.chatCompletion.gemma312BQ4 = async (specs) => {
-            let json = await nexus.api({ app: "egemma3x12bxq4", cmd: "completions", body: specs })
-            if (json.code == 0) {
-                return json
-            }
-            return null
-        }
-    }
-
-
-    if (!global.nexus.agent.llms.imagelassifier.gemma34BQ8) {
-        global.nexus.agent.llms.imagelassifier.gemma34BQ8 = async (specs) => {
+    if (!global.nexus.agent.llms.imageClassifier.gemma34BQ8) {
+        global.nexus.agent.llms.imageClassifier.gemma34BQ8 = async (specs) => {
             let json = await nexus.api({ app: "egemma3x4bxq8", cmd: "imageclassify", body: specs })
             if (json.code == 0) {
                 return json
@@ -183,11 +214,140 @@ export const Loopez = () => {
         }
     }
 
+    if (!global.nexus.agent.llms.dataBaseAnswer.light) {
+        global.nexus.agent.llms.dataBaseAnswer.light = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "data-based-answer-light", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
 
-    if (!global.nexus.agent.llms.chatCompletion.gpt4o) {
-        global.nexus.agent.llms.chatCompletion.gpt4o = async (specs) => {
+    if (!global.nexus.agent.llms.dataBaseAnswer.v2) {
+        global.nexus.agent.llms.dataBaseAnswer.v2 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "data-based-answer-v2", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.dataBaseAnswer.v3) {
+        global.nexus.agent.llms.dataBaseAnswer.v3 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "data-based-answer-v3", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+
+    if (!global.nexus.agent.llms.fillStructure.light) {
+        global.nexus.agent.llms.fillStructure.light = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "fill-by-schema-light", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.fillStructure.v2) {
+        global.nexus.agent.llms.fillStructure.v2 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "fill-by-schema-v2", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.fillStructure.v3) {
+        global.nexus.agent.llms.fillStructure.v3 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "fill-by-schema-v3", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+
+
+    if (!global.nexus.agent.llms.toneRecognition.light) {
+        global.nexus.agent.llms.toneRecognition.light = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "text-tonerecognition-light", body: { input: specs } })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.toneRecognition.v2) {
+        global.nexus.agent.llms.toneRecognition.v2 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "text-tonerecognition-v2", body: { input: specs } })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.toneRecognition.v3) {
+        global.nexus.agent.llms.toneRecognition.v3 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "text-tonerecognition-v3", body: { input: specs } })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+
+
+    if (!global.nexus.agent.llms.textClassifier.light) {
+        global.nexus.agent.llms.textClassifier.light = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "text-classify-light", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.textClassifier.v2) {
+        global.nexus.agent.llms.textClassifier.v2 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "text-classify-v2", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.textClassifier.v3) {
+        global.nexus.agent.llms.textClassifier.v3 = async (specs) => {
+            let json = await nexus.api({ app: "eagents", cmd: "text-classify-v3", body: specs })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+
+    if (!global.nexus.agent.llms.chatCompletion.gemma34BQ8) {
+        global.nexus.agent.llms.chatCompletion.gemma34BQ8 = async (specs) => {
             let json = await nexus.api({
-                app: "eagents", cmd: "gpt4o", body: specs
+                app: "eagents", cmd: "gemma34b", body: specs
             })
             if (json.code == 0) {
                 return json
@@ -196,10 +356,73 @@ export const Loopez = () => {
         }
     }
 
-    if (!global.nexus.agent.llms.chatCompletion.gpt35) {
-        global.nexus.agent.llms.chatCompletion.gpt35 = async (specs) => {
+
+    if (!global.nexus.agent.llms.chatCompletion.gemma312BQ4) {
+        global.nexus.agent.llms.chatCompletion.gemma312BQ4 = async (specs) => {
             let json = await nexus.api({
-                app: "eagents", cmd: "gpt35", body: specs
+                app: "eagents", cmd: "gemma312b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.chatCompletion.oss20B) {
+        global.nexus.agent.llms.chatCompletion.oss20B = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "oss20b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.chatCompletion.oss36B) {
+        global.nexus.agent.llms.chatCompletion.oss36B = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "oss36b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+    if (!global.nexus.agent.llms.chatCompletion.oss120B) {
+        global.nexus.agent.llms.chatCompletion.oss120B = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "oss120b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+    if (!global.nexus.agent.llms.chatCompletion.gpt5) {
+        global.nexus.agent.llms.chatCompletion.gpt5 = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "gpt5", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.chatCompletion.gpt4) {
+        global.nexus.agent.llms.chatCompletion.gpt4 = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "gpt4", body: specs
             })
 
             if (json.code == 0) {
@@ -208,6 +431,102 @@ export const Loopez = () => {
             return null
         }
     }
+
+
+
+
+
+
+    if (!global.nexus.agent.llms.customAnswer.gemma34BQ8) {
+        global.nexus.agent.llms.customAnswer.gemma34BQ8 = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-gemma34b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+    if (!global.nexus.agent.llms.customAnswer.gemma312BQ4) {
+        global.nexus.agent.llms.customAnswer.gemma312BQ4 = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-gemma312b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.customAnswer.oss20B) {
+        global.nexus.agent.llms.customAnswer.oss20B = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-oss20b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.customAnswer.oss36B) {
+        global.nexus.agent.llms.customAnswer.oss36B = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-oss36b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+    if (!global.nexus.agent.llms.customAnswer.oss120B) {
+        global.nexus.agent.llms.customAnswer.oss120B = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-oss120b", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+    if (!global.nexus.agent.llms.customAnswer.gpt5) {
+        global.nexus.agent.llms.customAnswer.gpt5 = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-gpt5", body: specs
+            })
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+    if (!global.nexus.agent.llms.customAnswer.gpt4) {
+        global.nexus.agent.llms.customAnswer.gpt4 = async (specs) => {
+            let json = await nexus.api({
+                app: "eagents", cmd: "custom-gpt4", body: specs
+            })
+
+            if (json.code == 0) {
+                return json
+            }
+            return null
+        }
+    }
+
+
+
 
     if (!global.nexus.agent.email) {
         global.nexus.agent.email = {} as any
