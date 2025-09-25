@@ -32,6 +32,21 @@ declare global {
     declare type NextApiRequest = NextApiRequest
     declare type NextApiResponse = NextApiResponse
 
+    declare module '*.module.css' {
+        const classes: { [key: string]: string };
+        export default classes;
+    }
+    declare module '*.module.scss' {
+        const classes: { [key: string]: string };
+        export default classes;
+    }
+
+    // For **plain** global CSS imports
+    declare module '*.css';
+    declare module '*.scss';
+    declare module '*.sass';
+    declare module '*.less';
+
     var email: {
         send: (uid: string, type: EmailMessageType, id: string, norepeat: boolean = false, langcode: langType = "fa") => Promise<void>,
         signup: (email: string, code: string, langcode: langType) => Promise<void>,
