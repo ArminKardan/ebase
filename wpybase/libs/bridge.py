@@ -864,7 +864,7 @@ class App:
         *,
         app: str,
         cmd: str,
-        body={},
+        body: dict | list ={},
         ownership:str  = "owner",
         resource: str = None,
         prioritize_mine: bool = False,
@@ -926,7 +926,7 @@ class App:
         self,
         *,
         app: str,
-        body: str | dict | list,
+        body: dict | list,
         ownership: str = "owner",
         resource: str = None,
         prioritize_mine: bool = False,
@@ -993,7 +993,7 @@ class App:
         self.nexus.get_roster()
         self.channels.remove(channelname)
 
-    def sendtochannel(self, channelname: str, body: str | dict | list):
+    def sendtochannel(self, channelname: str, body: dict | list):
         if channelname not in self.channels:
             self.subscribe(channelname)
         if type(body) == dict or type(body) == list:
