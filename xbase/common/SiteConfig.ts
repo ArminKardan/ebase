@@ -19,20 +19,20 @@ export default {
     journaltypes:[
         {
             name:"usersuccess",
-            image:"https://cdn.ituring.ir/qepal/results.webp"
+            image:"https://cdn.qepal.com/qepal/results.webp"
         },
         {
             name:"journal",
-            image:"https://cdn.ituring.ir/qepal/journal.png"
+            image:"https://cdn.qepal.com/qepal/journal.png"
         },
         {
             name:"tutorial",
-            image:"https://cdn.ituring.ir/qepal/tutorial.webp"
+            image:"https://cdn.qepal.com/qepal/tutorial.webp"
         },
     ],
     twostepdepexpire:3600000,
     freezeperday: 15,
-    sitefiles:"https://cdn.ituring.ir/qepal",
+    sitefiles:"https://cdn.qepal.com/qepal",
     defaultFont:"Segoe UI, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,\
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
     address:"https://qepal.com",
@@ -70,35 +70,35 @@ export default {
                     key:"android",
                     minos:"Android 7.0 (API 24)",
                     version:1.25,
-                    image:"https://cdn.ituring.ir/qepal/apk.svg",
+                    image:"https://cdn.qepal.com/qepal/apk.svg",
                 },
                 windows:
                 {
                     key:"windows",
                     minos:"Windows 8.1 (x64)",
                     version:2.56,
-                    image:"https://cdn.ituring.ir/qepal/win.png",
+                    image:"https://cdn.qepal.com/qepal/win.png",
                 },
                 macos:
                 {
                     key:"macos",
                     minos:"macOS 10.14",
                     version:3.66,
-                    image:"https://cdn.ituring.ir/qepal/macos.webp",
+                    image:"https://cdn.qepal.com/qepal/macos.webp",
                 },
                 ios:
                 {
                     key:"ios",
                     minos:"iOS 8.0",
                     version:1.95,
-                    image:"https://cdn.ituring.ir/qepal/ios.svg",
+                    image:"https://cdn.qepal.com/qepal/ios.svg",
                 },
                 ubuntu:
                 {
                     key:"ubuntu",
                     minos:"Ubuntu v16.25",
                     version:6.18,
-                    image:"https://cdn.ituring.ir/qepal/ubuntu.svg",
+                    image:"https://cdn.qepal.com/qepal/ubuntu.svg",
                 },
             }
             
@@ -108,11 +108,11 @@ export default {
     supportdeps:[
         {
             name:"general",
-            image:"https://cdn.ituring.ir/qepal/supporter.svg"
+            image:"https://cdn.qepal.com/qepal/supporter.svg"
         },
         {
             name:"sell",
-            image:"https://cdn.ituring.ir/qepal/supporter.svg"
+            image:"https://cdn.qepal.com/qepal/supporter.svg"
         }
 
     ]

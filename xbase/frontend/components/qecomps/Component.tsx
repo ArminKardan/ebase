@@ -5,6 +5,7 @@ import { SSRGlobal } from './Context';
 import ComponentSSR from './Componentd';
 import dynamic from 'next/dynamic';
 import { EndUserFront, EndUserType, MiddleUserType, TopUserType } from '@/frontend/user';
+import { Meta } from '@/common/seo';
 const ComponentCSR = dynamic(() => import('./Componentd.tsx').then(x => x.default), { ssr: false })
 
 
@@ -107,31 +108,68 @@ const convertor = (props: any, Page: PageEl, isPage: boolean, z: ZType, ssr) => 
         Parent = ComponentSSR
     }
 
+    let meta = props.meta as Meta
+
+
     return <Parent>
-        {isPage && props.title ? <Head>
-            <title>{props.title}</title>
-            <meta name="description" content={props.description} />
-            <meta name="color-scheme" content="light" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <meta property="og:image" content={props.mainimage} />
-            <meta property="og:image:alt" content={props.title} />
-            <meta property="og:title" content={props.title} />
-            <meta property="og:description" content={props.description} />
+        {isPage && meta ? <Head>
+            <title>{meta.title}</title>
+
+            <meta charSet="UTF-8" />
+            <meta name="description" content={meta.description} />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+            <meta property="og:type" content={meta.og.type} />
+            <meta property="og:title" content={meta.og.title || meta.title} />
+            <meta property="og:description" content={meta.og.description || meta.description} />
+            <meta property="og:url" content={meta.og.url} />
+            <meta property="og:image" content={meta.og.image} />
+            <meta property="og:image:alt" content={meta.og.alt || meta.title} />
+            <meta property="og:locale" content={meta.og.locale} />
+            <meta name="robots" content={`${meta.index ? "index" : "noindex"}, ${meta.follow ? "follow" : "nofollow"}, max-image-preview:large, max-snippet:-1, max-video-preview:-1`} />
+
+            <link rel="canonical" href={meta.canonical} />
+            {
+                (meta.hrefLangs || []).map(hr => {
+                    return <link rel="alternate" hrefLang={hr.code} href={hr.url} />
+                })
+            }
+
+            <meta name="twitter:card" content={meta.twitter.card} />
+            <meta name="twitter:title" content={meta.twitter.title} />
+            <meta name="twitter:description" content={meta.twitter.description} />
+            <meta name="twitter:image" content={meta.twitter.image} />
+            <meta name="twitter:site" content={meta.twitter.site} />
+
+            <link rel="icon" href="/favicon.ico" />
 
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
                     __html: JSON.stringify({
                         "@context": "https://schema.org",
-                        "@type": "WebPage",
-                        "name": props.title,
-                        "image": props.mainimage,
-                        "description": props.description
+                        "@type": "Organization",
+                        "name": "کیو ای",
+                        logo: "https://cdn.qepal.com/qepal/qecircabs.webp",
+                        contactPoint: { "@type": "ContactPoint", telephone: "+98-21-74391640", areaServed: { "@type": "Country", "name": "IR" } },
+                        url: "https://qepal.com/",
+                        sameAs: ["https://www.instagram.com/qenews", "https://x.com/armincdn", "https://www.linkedin.com/in/armin-kardan"]
                     })
                 }}
             />
 
-            <link rel="icon" href="/favicon.ico" />
+
+            {meta.ldjsons.map(ldjson => {
+                return <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(ldjson)
+                    }}
+                />
+            })}
+
+
+
         </Head> : null}
 
 

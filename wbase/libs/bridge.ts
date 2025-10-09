@@ -905,7 +905,7 @@ export namespace App {
             extension = "." + extension
         }
 
-        let serverUrl = 'https://cdn.ituring.ir/qeupload/uploader.php';
+        let serverUrl = 'https://cdn.qepal.com/qeupload/uploader.php';
         if (global.wsdebug) console.log("UID is:", uid);
 
         try {
@@ -969,7 +969,7 @@ export namespace App {
             });
 
             // Log the successful response
-            return `https://cdn.ituring.ir/qeupload/${uid}/${newFileName}`;
+            return `https://cdn.qepal.com/qeupload/${uid}/${newFileName}`;
         } catch (error) {
             // Debugging: Log the error
             console.error(`Upload failed for Buffer:`, error);

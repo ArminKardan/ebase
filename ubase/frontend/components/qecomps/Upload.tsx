@@ -115,7 +115,7 @@ export default (props: {
           name: f.name.toLowerCase(),
           size: f.size,
           percent: 0,
-          url: `https://cdn.ituring.ir/qeupload/${z.middleuser.uid}/${f.name.toLowerCase()}`
+          url: `https://cdn.qepal.com/qeupload/${z.middleuser.uid}/${f.name.toLowerCase()}`
         })
       }
     }
@@ -141,7 +141,7 @@ export default (props: {
 
         axios.request({
           method: "post",
-          url: "https://cdn.ituring.ir/qeupload/uploader.php",
+          url: "https://cdn.qepal.com/qeupload/uploader.php",
           headers: {
             // token: ans.token
           },

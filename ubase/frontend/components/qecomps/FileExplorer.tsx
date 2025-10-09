@@ -19,7 +19,7 @@ const FileExplorer = ({ on }: FileExplorerProps) => {
   const z = SSRGlobal();
 
   const [filehost] = useState<string>(
-    'https://cdn.ituring.ir/qeupload/' + z.middleuser.uid
+    'https://cdn.qepal.com/qeupload/' + z.middleuser.uid
   );
   const [allFiles, setAllFiles] = useState<string[]>([]);
   const [currentPath, setCurrentPath] = useState<string>('');
@@ -33,40 +33,40 @@ const FileExplorer = ({ on }: FileExplorerProps) => {
 
   // File type icons for specific extensions or names
   const fileTypeIcon: { [key: string]: string } = {
-    ".php": "https://cdn.ituring.ir/qepal/php.png",
-    ".txt": "https://cdn.ituring.ir/qepal/txt.png",
-    ".cpp": "https://cdn.ituring.ir/qepal/cpp.png",
-    ".js": "https://cdn.ituring.ir/qepal/js.png",
-    ".ts": "https://cdn.ituring.ir/qepal/ts.png",
-    ".sh": "https://cdn.ituring.ir/qepal/sh.png",
-    ".css": "https://cdn.ituring.ir/qepal/css.png",
-    ".ppt": "https://cdn.ituring.ir/qepal/ppt.png",
-    ".docx": "https://cdn.ituring.ir/qepal/word.png",
-    ".doc": "https://cdn.ituring.ir/qepal/word.png",
-    ".tsx": "https://cdn.ituring.ir/qepal/tsx.png",
-    ".xml": "https://cdn.ituring.ir/qepal/xml.png",
-    ".iso": "https://cdn.ituring.ir/qepal/iso.png",
-    ".jsx": "https://cdn.ituring.ir/qepal/tsx.png",
-    ".xlsx": "https://cdn.ituring.ir/qepal/excel.png",
-    ".csv": "https://cdn.ituring.ir/qepal/excel.png",
-    ".dll": "https://cdn.ituring.ir/qepal/dll.png",
-    ".json": "https://cdn.ituring.ir/qepal/json.png",
-    ".htm": "https://cdn.ituring.ir/qepal/html.png",
-    ".html": "https://cdn.ituring.ir/qepal/html.png",
-    ".pdf": "https://cdn.ituring.ir/qepal/pdf.png",
-    ".cs": "https://cdn.ituring.ir/qepal/csharp.webp",
-    ".rar": "https://cdn.ituring.ir/qepal/rar.webp",
-    ".zip": "https://cdn.ituring.ir/qepal/rar.webp",
-    ".mp3": "https://cdn.ituring.ir/qepal/mp3.png",
-    ".mp4": "https://cdn.ituring.ir/qepal/mp4.png",
-    ".mov": "https://cdn.ituring.ir/qepal/mov.png",
-    ".7z": "https://cdn.ituring.ir/qepal/rar.webp",
-    ".exe": "https://cdn.ituring.ir/qepal/exe.png",
-    ".psd": "https://cdn.ituring.ir/qepal/psd.png",
-    ".sql": "https://cdn.ituring.ir/qepal/sql.png",
-    ".yml": "https://cdn.ituring.ir/qepal/yml.png",
-    ".bat": "https://cdn.ituring.ir/qepal/bat.png",
-    ".flac": "https://cdn.ituring.ir/qepal/flac.png",
+    ".php": "https://cdn.qepal.com/qepal/php.png",
+    ".txt": "https://cdn.qepal.com/qepal/txt.png",
+    ".cpp": "https://cdn.qepal.com/qepal/cpp.png",
+    ".js": "https://cdn.qepal.com/qepal/js.png",
+    ".ts": "https://cdn.qepal.com/qepal/ts.png",
+    ".sh": "https://cdn.qepal.com/qepal/sh.png",
+    ".css": "https://cdn.qepal.com/qepal/css.png",
+    ".ppt": "https://cdn.qepal.com/qepal/ppt.png",
+    ".docx": "https://cdn.qepal.com/qepal/word.png",
+    ".doc": "https://cdn.qepal.com/qepal/word.png",
+    ".tsx": "https://cdn.qepal.com/qepal/tsx.png",
+    ".xml": "https://cdn.qepal.com/qepal/xml.png",
+    ".iso": "https://cdn.qepal.com/qepal/iso.png",
+    ".jsx": "https://cdn.qepal.com/qepal/tsx.png",
+    ".xlsx": "https://cdn.qepal.com/qepal/excel.png",
+    ".csv": "https://cdn.qepal.com/qepal/excel.png",
+    ".dll": "https://cdn.qepal.com/qepal/dll.png",
+    ".json": "https://cdn.qepal.com/qepal/json.png",
+    ".htm": "https://cdn.qepal.com/qepal/html.png",
+    ".html": "https://cdn.qepal.com/qepal/html.png",
+    ".pdf": "https://cdn.qepal.com/qepal/pdf.png",
+    ".cs": "https://cdn.qepal.com/qepal/csharp.webp",
+    ".rar": "https://cdn.qepal.com/qepal/rar.webp",
+    ".zip": "https://cdn.qepal.com/qepal/rar.webp",
+    ".mp3": "https://cdn.qepal.com/qepal/mp3.png",
+    ".mp4": "https://cdn.qepal.com/qepal/mp4.png",
+    ".mov": "https://cdn.qepal.com/qepal/mov.png",
+    ".7z": "https://cdn.qepal.com/qepal/rar.webp",
+    ".exe": "https://cdn.qepal.com/qepal/exe.png",
+    ".psd": "https://cdn.qepal.com/qepal/psd.png",
+    ".sql": "https://cdn.qepal.com/qepal/sql.png",
+    ".yml": "https://cdn.qepal.com/qepal/yml.png",
+    ".bat": "https://cdn.qepal.com/qepal/bat.png",
+    ".flac": "https://cdn.qepal.com/qepal/flac.png",
   };
 
   useEffect(() => {

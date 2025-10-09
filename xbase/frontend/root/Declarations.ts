@@ -31,19 +31,19 @@ export const DeclarationsAfter = (props, z) => {
     }
   } catch { }
 
-  if (z.lang) {
-    let el = document.getElementById("wind")
-    if (el)
-      el.style.fontFamily = z.lang.ff
-    setTimeout(() => {
-      let elx = document.getElementById("wind")
-      if (elx)
-        elx.style.fontFamily = z.lang.ff
-    }, 1000);
-  }
+  // if (z.lang) {
+  //   let el = document.getElementById("wind")
+  //   if (el)
+  //     el.style.fontFamily = z.lang.ff
+  //   setTimeout(() => {
+  //     let elx = document.getElementById("wind")
+  //     if (elx)
+  //       elx.style.fontFamily = z.lang.ff
+  //   }, 1000);
+  // }
 
   if (!window.parentdiv) {
-    window.parentdiv = document.getElementById("wind")
+    window.parentdiv = document.body
   }
   window.parentdiv.onscroll = (e) => {
     let target: any = e.currentTarget;

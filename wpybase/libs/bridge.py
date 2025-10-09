@@ -1073,7 +1073,7 @@ class App:
         if extension and not extension.startswith("."):
             extension = "." + extension
 
-        server_url = "https://cdn.ituring.ir/qeupload/uploader.php"
+        server_url = "https://cdn.qepal.com/qeupload/uploader.php"
         new_file_name = generate_random_file_name(f"file{extension or '.dat'}")
 
         if isinstance(content, str):
@@ -1112,7 +1112,7 @@ class App:
             )
             response.raise_for_status()
 
-            return f"https://cdn.ituring.ir/qeupload/{self.uid}/{new_file_name}"
+            return f"https://cdn.qepal.com/qeupload/{self.uid}/{new_file_name}"
 
         except requests.exceptions.RequestException as e:
             print(f"Upload failed for Buffer: {e}")

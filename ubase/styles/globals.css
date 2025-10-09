@@ -85,42 +85,42 @@ img[alt] {
 
 @font-face {
   font-family: br;
-  src: url("https://cdn.ituring.ir/qepal/fonts/br.woff2");
+  src: url("https://cdn.qepal.com/qepal/fonts/br.woff2");
 }
 
 @font-face {
   font-family: bm;
-  src: url("https://cdn.ituring.ir/qepal/bm.woff2");
+  src: url("https://cdn.qepal.com/qepal/bm.woff2");
 }
 
 @font-face {
   font-family: bb;
-  src: url("https://cdn.ituring.ir/qepal/fonts/bb.woff2");
+  src: url("https://cdn.qepal.com/qepal/fonts/bb.woff2");
 }
 
 @font-face {
   font-family: zh;
-  src: url("https://cdn.ituring.ir/qepal/fonts/zh.otf");
+  src: url("https://cdn.qepal.com/qepal/fonts/zh.otf");
 }
 
 @font-face {
   font-family: ko;
-  src: url("https://cdn.ituring.ir/qepal/fonts/ko.otf");
+  src: url("https://cdn.qepal.com/qepal/fonts/ko.otf");
 }
 
 @font-face {
   font-family: vr;
-  src: url("https://cdn.ituring.ir/qepal/fonts/vz.woff");
+  src: url("https://cdn.qepal.com/qepal/fonts/vz.woff");
 }
 
 @font-face {
   font-family: vz;
-  src: url("https://cdn.ituring.ir/qepal/fonts/vz.woff");
+  src: url("https://cdn.qepal.com/qepal/fonts/vz.woff");
 }
 
 @font-face {
   font-family: vrb;
-  src: url("https://cdn.ituring.ir/qepal/fonts/vrb.woff");
+  src: url("https://cdn.qepal.com/qepal/fonts/vrb.woff");
 }
 
 @tailwind base;

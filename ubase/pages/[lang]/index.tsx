@@ -105,19 +105,19 @@ const Page: PageEl = (props, refresh, getProps, onLoad, onConnected, dies, isFro
         id: "siavashghomeyshi",
         name: "سیاوش قمیشی",
         score: 100,
-        image: "https://cdn.ituring.ir/qeupload/635111b8ff61db2b04928f49/siavashghomayshiahoramusicir1jpg-00ytoubmoodoycpxead8ml9jngom16.jpg"
+        image: "https://cdn.qepal.com/qeupload/635111b8ff61db2b04928f49/siavashghomayshiahoramusicir1jpg-00ytoubmoodoycpxead8ml9jngom16.jpg"
       },
       {
         id: "hayedeh",
         name: "هایده",
         score: 100,
-        image: "https://cdn.ituring.ir/qeupload/635111b8ff61db2b04928f49/haydehdidarjpg-po2b1o5vvgffhn4cp1gtnulreqc63a.jpg"
+        image: "https://cdn.qepal.com/qeupload/635111b8ff61db2b04928f49/haydehdidarjpg-po2b1o5vvgffhn4cp1gtnulreqc63a.jpg"
       },
       {
         id: "ebi",
         name: "ابی",
         score: 100,
-        image: "https://cdn.ituring.ir/qeupload/635111b8ff61db2b04928f49/jpg-i3k3k83fb8ipmmzaqpddnvdyy90qpy.jpg"
+        image: "https://cdn.qepal.com/qeupload/635111b8ff61db2b04928f49/jpg-i3k3k83fb8ipmmzaqpddnvdyy90qpy.jpg"
       },
     ]
   })
@@ -490,7 +490,7 @@ const Page: PageEl = (props, refresh, getProps, onLoad, onConnected, dies, isFro
 
           <li className="list-row">
             <div className="text-4xl font-thin opacity-30 tabular-nums">01</div>
-            <div><img className="size-10 rounded-box" src="https://cdn.ituring.ir/qeupload/635111b8ff61db2b04928f49/siavashwebp-4s0z7pnjtj3epsgzgdrv5jekyexhan.webp" /></div>
+            <div><img className="size-10 rounded-box" src="https://cdn.qepal.com/qeupload/635111b8ff61db2b04928f49/siavashwebp-4s0z7pnjtj3epsgzgdrv5jekyexhan.webp" /></div>
             <div className="list-col-grow">
               <div>سیاوش قمیشی</div>
               <div className="text-xs uppercase opacity-60">قصه گل و تگرگ</div>
@@ -502,7 +502,7 @@ const Page: PageEl = (props, refresh, getProps, onLoad, onConnected, dies, isFro
 
           <li className="list-row">
             <div className="text-4xl font-thin opacity-30 tabular-nums">02</div>
-            <div><img className="size-10 rounded-box" src="https://cdn.ituring.ir/qeupload/635111b8ff61db2b04928f49/haydehdidarjpg-po2b1o5vvgffhn4cp1gtnulreqc63a.jpg" /></div>
+            <div><img className="size-10 rounded-box" src="https://cdn.qepal.com/qeupload/635111b8ff61db2b04928f49/haydehdidarjpg-po2b1o5vvgffhn4cp1gtnulreqc63a.jpg" /></div>
             <div className="list-col-grow">
               <div>هایده</div>
               <div className="text-xs uppercase font-semibold opacity-60">شب عشق</div>
@@ -514,7 +514,7 @@ const Page: PageEl = (props, refresh, getProps, onLoad, onConnected, dies, isFro
 
           <li className="list-row">
             <div className="text-4xl font-thin opacity-30 tabular-nums">03</div>
-            <div><img className="size-10 rounded-box" src="https://cdn.ituring.ir/qeupload/635111b8ff61db2b04928f49/jpg-i3k3k83fb8ipmmzaqpddnvdyy90qpy.jpg" /></div>
+            <div><img className="size-10 rounded-box" src="https://cdn.qepal.com/qeupload/635111b8ff61db2b04928f49/jpg-i3k3k83fb8ipmmzaqpddnvdyy90qpy.jpg" /></div>
             <div className="list-col-grow">
               <div>ابی</div>
               <div className="text-xs uppercase font-semibold opacity-60">گریز</div>

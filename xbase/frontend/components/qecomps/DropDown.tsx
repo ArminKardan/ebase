@@ -28,7 +28,7 @@ export default (props: { id: string, title: string, state: any, children: any, t
         transition: "all 0.3s ease-out", position: "absolute", right: 10, paddingTop: 1,
         transform: props.state != "open" ? "" : "rotate(180deg)"
       }}>
-        <img src={"https://cdn.ituring.ir/qepal/down2.svg"} alt="received transaction count" style={{ width: 10, height: 10 }} /> </div>
+        <img src={"https://cdn.qepal.com/qepal/down2.svg"} alt="received transaction count" style={{ width: 10, height: 10 }} /> </div>
     </div>
 
 

@@ -49,7 +49,7 @@ export default (props: {
 lkr-s,
 lkr-v,
 lkg-v {
-  background-image: url("https://cdn.ituring.ir/qepal/likegreen.svg");
+  background-image: url("https://cdn.qepal.com/qepal/likegreen.svg");
   background-repeat: no-repeat;
   background-position: center;
   height: 21px;
@@ -69,7 +69,7 @@ lkg-v {
 
 lkr-s,
 lkr-v {
-  background-image: url("https://cdn.ituring.ir/qepal/likered3.svg");
+  background-image: url("https://cdn.qepal.com/qepal/likered3.svg");
   transform: rotate(180deg);
 }
 

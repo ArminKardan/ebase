@@ -165,7 +165,7 @@ export default (props) => {
             return
         let filename = link.split("/").at(-1)
         const token = await z.middleuser.tempsecret.generate();
-        let lnk = 'https://cdn.ituring.ir/qeupload/' + z.middleuser.uid + "/remove.php/?token=" + token
+        let lnk = 'https://cdn.qepal.com/qeupload/' + z.middleuser.uid + "/remove.php/?token=" + token
         let json = await (await fetch(lnk, {
             method: "POST",
             headers: {

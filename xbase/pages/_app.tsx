@@ -128,19 +128,26 @@ export default function App({ Component, pageProps }) {
   }, [])
 
 
+  if (typeof window != "undefined") {
+    global.theme = document.body.getAttribute("data-theme")
+  }
+
   props["isPage"] = true
+
+  if (!pageProps.data && process && process.env.BUILDMODE) {
+    return null
+  }
+
 
   return (
     <Context.Provider value={props.pageid}>
-      <Script src="/xmpp.min.js" strategy="lazyOnload" onLoad={() => { Nexus(z) }} />
-      <Calendar />
-      <CalendarEN />
-      <CalendarFA />
-      <div id="wind" style={{ overflowY: "auto", height: "100vh" }} >
-        <Prompt />
-        <Component {...props} />
-      </div>
-      <QELoader />
+      {pageProps.data ? <Script src="/xmpp.min.js" strategy="lazyOnload" onLoad={() => { Nexus(z) }} /> : null}
+      {pageProps.data ? <Calendar /> : null}
+      {pageProps.data ? <CalendarEN /> : null}
+      {pageProps.data ? <CalendarFA /> : null}
+      {pageProps.data ? <Prompt /> : null}
+      <Component {...props} />
+      {pageProps.data ? <QELoader /> : null}
     </Context.Provider>
   )
 }

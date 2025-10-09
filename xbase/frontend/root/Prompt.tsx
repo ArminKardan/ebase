@@ -640,6 +640,10 @@ export default (props) => {
         st.attributes.style.transform = "translate(-50%, -50%)"
       }
 
+      if (!st.attributes["zplus"])
+        st.attributes["zplus"] = (st.attributes["zplus"] || 0) + Object.keys(global.promptstate).filter(k => k.startsWith("customer") && global.promptstate[k]).length
+
+
       return <WindowFloatModal {...st.attributes} _refer={refer} onclose={() => {
         setst({ ...st, resolved: true }); window["customresolve" + id](null)
       }}>
@@ -669,6 +673,9 @@ export default (props) => {
         refer.close()
         setTimeout(() => { setst({ ...st, resolved: true }); window["customresolve" + id](x) }, 400)
       }, attributes)
+
+      if (!attributes["zplus"])
+        attributes["zplus"] = (attributes["zplus"] || 0) + Object.keys(global.promptstate).filter(k => k.startsWith("customer") && global.promptstate[k]).length
 
       return <WindowFloat {...attributes} _refer={refer} onclose={() => {
         setst({ ...st, resolved: true }); window["customresolve" + id](null)

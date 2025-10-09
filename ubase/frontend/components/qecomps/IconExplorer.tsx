@@ -12,7 +12,7 @@ type FileItem = {
   isDirectory: boolean;
 };
 
-const FILE_HOST = 'https://cdn.ituring.ir/qepal';
+const FILE_HOST = 'https://cdn.qepal.com/qepal';
 const TOKEN = 'googoolians';
 
 const IconExplorer = (props: { on: (url) => void }) => {
