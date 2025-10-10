@@ -1,0 +1,12 @@
+{
+  "name": "ebase-wbase",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node --transpileOnly ./libs/sync.ts && ts-node --transpileOnly ./run.ts",
+    "buildlinux": "npx esbuild \"*.ts\" \"libs/**/*.ts\"  --outdir=./ --platform=node --target=node23 --format=cjs --bundle=false --allow-overwrite",
+    "startlinux": "node ./libs/sync.js && node ./run.js",
+    "devesbuild": "npx esbuild \"*.ts\" \"libs/**/*.ts\" --outdir=./ --platform=node --target=node23 --format=cjs --bundle=false --allow-overwrite  && node ./libs/sync.js && node ./run.js"
+  },
+  "v2": true
+}
