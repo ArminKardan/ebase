@@ -27,12 +27,6 @@ const version = "1.1"
 
 export default function App({ Component, pageProps }) {
 
-  if (!pageProps.data) {
-    if (typeof window != "undefined")
-      Router.push('/');
-    return null
-  }
-
   if (typeof window != "undefined") {
     QSON();
   }
@@ -45,7 +39,7 @@ export default function App({ Component, pageProps }) {
     }
   } catch { }
 
-  if (props.session.code) {
+  if (props?.session?.code) {
     return null
   }
 
@@ -69,7 +63,7 @@ export default function App({ Component, pageProps }) {
     if (ver != version) {
       localStorage.clear()
       localStorage.setItem("version", version)
-      window.location.reload()
+      // window.location.reload()
     }
     Scroller();
     DeclarationsBefore(props, z)
@@ -80,25 +74,22 @@ export default function App({ Component, pageProps }) {
       z.lang = JSON.parse(lng)
       z.lang.langfulldone = true
     }
-
-
   }
 
   let sessionreloader: any = {};
 
   useEffect(() => {
 
-    Router.events.on("routeChangeStart", async () => {
-      // let subs = Array.from(await global.nexus?.channels() || [])
-      // for (let channel of subs) {
-      //   await global.nexus?.unsubscribe?.(channel)
-      // }
-      // global.nexus.msgreceiver = () => { }
-      // global.xmpppageloaded = false
-    })
+    // Router.events.on("routeChangeStart", async () => {
+    //   // let subs = Array.from(await global.nexus?.channels() || [])
+    //   // for (let channel of subs) {
+    //   //   await global.nexus?.unsubscribe?.(channel)
+    //   // }
+    //   // global.nexus.msgreceiver = () => { }
+    //   // global.xmpppageloaded = false
+    // })
 
     if (!pageProps.data) {
-      Router.push('/');
       return
     }
 
@@ -136,6 +127,10 @@ export default function App({ Component, pageProps }) {
 
   if (!pageProps.data && process && process.env.BUILDMODE) {
     return null
+  }
+
+  if (typeof window != "undefined") {
+    global.theme = document.body.getAttribute("data-theme")
   }
 
 

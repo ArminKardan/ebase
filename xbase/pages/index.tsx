@@ -12,7 +12,7 @@ export async function getServerSideProps(context) {
 
   return {
     redirect: {
-      permanent: false,
+      permanent: true,
       destination: "/fa",
     },
     props: {}
