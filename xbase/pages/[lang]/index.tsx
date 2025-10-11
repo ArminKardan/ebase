@@ -1,14 +1,12 @@
 
 import Component, { PageEl } from '@/frontend/components/qecomps/Component'
 import Window from '@/frontend/components/qecomps/Window';
-import { useEffect } from 'react';
 import type { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import Router from 'next/router'
 import Copy from '@/frontend/components/qecomps/Copy';
 import FaDigits, { EnDigits } from '@/frontend/components/qecomps/FaDigits';
 import TextBox from '@/frontend/components/qecomps/TextBox';
 import Text from '@/frontend/components/qecomps/Text';
-import AbbreviateDate from '@/frontend/components/qecomps/AbbreviateDate';
 import Badge from '@/frontend/components/qecomps/Badge';
 import Bold from '@/frontend/components/qecomps/Bold';
 import Cap, { FAtoENRatio } from '@/frontend/components/qecomps/Cap';
@@ -43,14 +41,11 @@ import VItem from '@/frontend/components/qecomps/VItem';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { Unstable_RadarChart as RadarChart } from '@mui/x-charts/RadarChart';
-
-import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BuildIcon from '@mui/icons-material/Build';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import AlbumIcon from '@mui/icons-material/Album';
 import ApprovalIcon from '@mui/icons-material/Approval';
@@ -59,30 +54,6 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CreateIcon from '@mui/icons-material/Create';
 import DangerousIcon from '@mui/icons-material/Dangerous';
-import DateRangeIcon from '@mui/icons-material/DateRange';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DewPointIcon from '@mui/icons-material/DewPoint';
-import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import DoneIcon from '@mui/icons-material/Done';
-import EditDocumentIcon from '@mui/icons-material/EditDocument';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FactoryIcon from '@mui/icons-material/Factory';
-import FolderCopyIcon from '@mui/icons-material/FolderCopy';
-import FolderIcon from '@mui/icons-material/Folder';
-import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import GppGoodIcon from '@mui/icons-material/GppGood';
-import GppBadIcon from '@mui/icons-material/GppBad';
-import GppMaybeIcon from '@mui/icons-material/GppMaybe';
-import HelpIcon from '@mui/icons-material/Help';
-import HomeIcon from '@mui/icons-material/Home';
-import InfoIcon from '@mui/icons-material/Info';
-import LaptopChromebookIcon from '@mui/icons-material/LaptopChromebook';
-import LocationPinIcon from '@mui/icons-material/LocationPin';
-import MicIcon from '@mui/icons-material/Mic';
-import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import { LDJSONArticle, LDJSONWebPage, LDJSONWebSite, Meta, toLocalISO } from '@/common/seo';
 
 
