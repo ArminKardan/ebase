@@ -3,10 +3,11 @@ export async function middleware(request: Request) {
   let url = new URL(request.url)
   let path = url.pathname;
 
-  // if(path.endsWith("/404"))
-  // {
-  //   return NextResponse.next();
-  // }
+
+  if (path == "/robots.txt") {
+    let dest = `${url.origin}/api/robots`
+    return NextResponse.rewrite(dest)
+  }
 
   if (path == "/sitemap.xml") {
     let dest = `${url.origin}/api/sitemap`

@@ -88,7 +88,7 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
       "@type": "WebPage",
       "name": "آرمین کاردان - وب سایت شخصی",
       "image": "https://cdn.qepal.com/qepal/posters/p9.webp",
-      "url": "https://exirnex.ir/mypage",
+      "url": "https://exirnex.ir/seosample",
       inLanguage: "fa",
       isPartOf: {
         "@type": "WebSite", //don't change
@@ -112,7 +112,7 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
 
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": "https://exirnex.ir/mypage"
+        "@id": "https://exirnex.ir/seosample"
       }
 
     } as LDJSONWebPage,

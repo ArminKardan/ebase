@@ -7,7 +7,7 @@ export default async function F(T: {text: string}, C: APISession,) {
   C.res.send(`
       <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         <sitemap>
-          <loc>https://exirnex.ir/api/sitemaps/fa.xml</loc>
+          <loc>https://exirnex.ir/fa/sitemap.xml</loc>
         </sitemap>
       </sitemapindex>
     `)

@@ -49,10 +49,6 @@ export default function App({ Component, pageProps }) {
   z.styles = styles
   z.qestyles = qestyles
 
-  // if ((z["pagepath"] && z["pagepath"] != props.href) || (!global.pageid && !z.lang)) {
-  //   z.lang = props.nlangs
-  // }
-
   if (props.nlangs) {
     z.lang = props.nlangs
   }
@@ -79,15 +75,6 @@ export default function App({ Component, pageProps }) {
   let sessionreloader: any = {};
 
   useEffect(() => {
-
-    // Router.events.on("routeChangeStart", async () => {
-    //   // let subs = Array.from(await global.nexus?.channels() || [])
-    //   // for (let channel of subs) {
-    //   //   await global.nexus?.unsubscribe?.(channel)
-    //   // }
-    //   // global.nexus.msgreceiver = () => { }
-    //   // global.xmpppageloaded = false
-    // })
 
     if (!pageProps.data) {
       return
@@ -127,10 +114,6 @@ export default function App({ Component, pageProps }) {
 
   if (!pageProps.data && process && process.env.BUILDMODE) {
     return null
-  }
-
-  if (typeof window != "undefined") {
-    global.theme = document.body.getAttribute("data-theme")
   }
 
 

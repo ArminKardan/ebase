@@ -86,49 +86,41 @@ img[alt] {
 @font-face {
   font-family: br;
   src: url("https://cdn.ituring.ir/qepal/fonts/br.woff2");
-  font-display: swap;
 }
 
 @font-face {
   font-family: bm;
   src: url("https://cdn.ituring.ir/qepal/bm.woff2");
-  font-display: swap;
 }
 
 @font-face {
   font-family: bb;
   src: url("https://cdn.ituring.ir/qepal/fonts/bb.woff2");
-  font-display: swap;
 }
 
 @font-face {
   font-family: zh;
   src: url("https://cdn.ituring.ir/qepal/fonts/zh.otf");
-  font-display: swap;
 }
 
 @font-face {
   font-family: ko;
   src: url("https://cdn.ituring.ir/qepal/fonts/ko.otf");
-  font-display: swap;
 }
 
 @font-face {
   font-family: vr;
   src: url("https://cdn.ituring.ir/qepal/fonts/vz.woff");
-  font-display: swap;
 }
 
 @font-face {
   font-family: vz;
   src: url("https://cdn.ituring.ir/qepal/fonts/vz.woff");
-  font-display: swap;
 }
 
 @font-face {
   font-family: vrb;
   src: url("https://cdn.ituring.ir/qepal/fonts/vrb.woff");
-  font-display: swap;
 }
 
 @tailwind base;

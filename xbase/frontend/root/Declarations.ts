@@ -302,7 +302,7 @@ export const APILister = (props) => {
     setTimeout(() => {
       console.log("api-expire-reload")
       deleteCookie("apilistexpire")
-      window.location.reload()
+      // window.location.reload()
     }, 2000);
   }
 }
