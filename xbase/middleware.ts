@@ -3,6 +3,10 @@ export async function middleware(request: Request) {
   let url = new URL(request.url)
   let path = url.pathname;
 
+  if (path == "/") {
+    let dest = `${url.origin}/fa`
+    return NextResponse.rewrite(dest)
+  }
 
   if (path == "/robots.txt") {
     let dest = `${url.origin}/api/robots`
