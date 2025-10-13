@@ -184,7 +184,7 @@ const Page: PageEl = (
       )}
 
       {/* Notification */}
-      {props.showNotification && (
+      /* {props.showNotification && (
         <Notification
           onClose={() => {
             props.showNotification = false;
@@ -193,7 +193,7 @@ const Page: PageEl = (
           onAboutClick={() => openWindow("about")}
           onProjectsClick={() => openWindow("projects")}
         />
-      )}
+      )} */
 
       {/* Start Menu */}
       {props.startMenuOpen && (
