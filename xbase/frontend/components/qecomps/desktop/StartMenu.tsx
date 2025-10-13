@@ -145,7 +145,7 @@ export default function StartMenu(props: {
           <f-cse className="gap-4">
             {<UserAvatar image="/1.jpg" width={50} style={{ flexShrink: 0 }} />}
             <c-ss className="flex-1">
-              <f-16 className="text-white font-bold">Saman Esmaellpour</f-16>
+              <f-16 className="text-white font-bold">Turing Team</f-16>
             </c-ss>
           </f-cse>
         </div>
