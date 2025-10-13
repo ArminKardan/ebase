@@ -23,16 +23,18 @@ export default function AboutWindow(props: {
       <div className="flex items-center gap-5" style={{ direction: "ltr" }}>
         <UserAvatar image="/1.jpg" width={100} style={{flexShrink:0}}/>
         <c-ss>
-          <f-24 className="font-bold mb-2">Saman Esmaellpour</f-24>
-          <f-14 className="text-gray-800 mb-2">Full-Stack Developer (QE)</f-14>
+          <f-24 className="font-bold mb-2">Turing Team</f-24>
+          <f-14 className="text-gray-800 mb-2">Technology Solutions</f-14>
           <f-13 className="text-gray-700">
-            I’m a senior full-stack developer and proud member of the Turing
-            research group, specializing in React.js, Next.js, JavaScript,
-            Node.js, Python, C#, and C++. Combining deep technical knowledge
-            with a passion for problem-solving, I’ve worked on diverse projects
-            ranging from cloud-based services to real-time applications. I’m
-            committed to delivering clean, maintainable, and scalable code while
-            helping businesses innovate and grow.
+            At Turing, we specialize in investment, design, consultation,
+            training, and support across software and hardware solutions. Our
+            team is deeply skilled in artificial intelligence, business
+            development in electronic and digital technologies, and building
+            innovative solutions based on cutting-edge technologies in computer
+            science, electrical engineering, and electronics. We combine
+            technical expertise with a passion for problem-solving, delivering
+            clean, maintainable, and scalable code while helping businesses
+            innovate and grow.
           </f-13>
         </c-ss>
       </div>
@@ -44,17 +46,11 @@ export default function AboutWindow(props: {
         <f-18 className="font-semibold mb-3">Skills</f-18>
         <w-sse className="gap-2">
           {[
-            "QE",
-            "JavaScript",
-            "TypeScript",
-            "Python",
-            "C++",
-            "Next.js",
-            "React.js",
-            "Node.js",
-            "Tailwind CSS",
-            "Flutter",
-            "MongoDB",
+            "Platform Design & Development",
+            "Microservices Architecture",
+            "Website Design",
+            "Electronic Product Development",
+            "Real-Time Applications",
           ].map((skill) => (
             <f-13
               key={skill}
