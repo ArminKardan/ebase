@@ -43,7 +43,7 @@ const Page: PageEl = (
   });
 
   onLoad(async () => {
-    props.background = "/TURING.jpg";
+    props.background = "/turing.webp";
     date();
     // Show notification
     await sleep(7000);
