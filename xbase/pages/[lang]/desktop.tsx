@@ -108,7 +108,7 @@ const Page: PageEl = (
   return (
     <div
       className="min-h-screen bg-cover bg-center relative pb-16"
-      style={{ backgroundImage: `url(${props.background})` }}
+      style={{ backgroundImage: `url(${props.background})`, direction:"ltr" }}
     >
       {/* Desktop Icons */}
       <div className="p-5 flex flex-col gap-4 w-fit">
