@@ -239,7 +239,7 @@ export default function StartMenu(props: {
                       <c-cc
                         className={`w-6 h-6 rounded-lg bg-gradient-to-br ${app.color} shadow-lg`}
                       >
-                        <span className="text-white">{app.icon}</span>
+                        <span className="w-4 h-4 text-white">{app.icon}</span>
                       </c-cc>
                       <f-10 className="text-gray-300">{app.name}</f-10>
                     </a>
@@ -247,6 +247,14 @@ export default function StartMenu(props: {
                 ))}
               </ul>
             </div>
+            <a
+              href="https://qepal.com"
+              target="_blank"
+              className="inline-flex items-center font-mono px-10 gap-2 text-[13px] text-slate-300 hover:text-white transition-colors"
+            >
+              <span>Powered By</span>
+              <img src="/favicon.ico" className="w-5 h-5"/>
+            </a>
           </div>
         </div>
 
