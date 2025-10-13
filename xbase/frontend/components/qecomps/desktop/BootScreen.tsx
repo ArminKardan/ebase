@@ -1,6 +1,6 @@
 export default function BootScreen() {
   return (
-    <c-cc className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black px-4">
+    <c-cc style={{direction:"ltr"}} className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black px-4">
       <c-cc className="space-y-6 md:space-y-8 max-w-2xl mx-auto">
         <f-40 className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 font-bold animate-[fadeIn_1s_ease-in] text-3xl sm:text-4xl md:text-5xl">
           Welcome
