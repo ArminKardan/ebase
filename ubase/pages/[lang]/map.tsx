@@ -16,6 +16,14 @@ const Page: PageEl = (
   z
 ) => {
 
+  // برای استفاده از کامپوننت مپ درون سایت یا میکروسرویس خود میبایست ابتدا کتابخانه های
+  // leaflet react-leaflet
+  // را درون بلاک خود نصب کنید
+  // برای نصب کتابخانه ابتدا وارد تنظیمات بلاک شوید و از گزینه
+  // npm install pkg
+  // کتابخانه ها را نصب کنید
+  // تصویر راهنما : https://qepal.com/i/M8BXC
+  
   getProps(async (isFront) => {
     // Default coordinates (Zargari office)
     const defaultLat = 29.63441753728273;
