@@ -10,7 +10,7 @@ type WinkDotProps = {
     | "pink"
     | "sky"
     | "orange";
-    size?: number;
+    size?: number; // size in rem units
 };
 
 export const colorMap = {
@@ -24,17 +24,22 @@ export const colorMap = {
     orange: "bg-orange-400",
 };
 
-export const WinkDot: React.FC<WinkDotProps> = ({ color = "green", size = 2.5 }) => {
-    const sizeClass = `w-${size} h-${size}`;
+export const WinkDot: React.FC<WinkDotProps> = ({ color = "green", size = 0.75 }) => {
+    const dotStyle = {
+        width: `${size}rem`,
+        height: `${size}rem`,
+    };
 
     return (
         <div className="inline-grid *:[grid-area:1/1]">
             <div className="inline-grid *:[grid-area:1/1]">
                 <div
-                    className={`rounded-full ${colorMap[color]} ${sizeClass} animate-ping`}
+                    className={`rounded-full ${colorMap[color]} animate-ping`}
+                    style={dotStyle}
                 ></div>
                 <div
-                    className={`rounded-full ${colorMap[color]} ${sizeClass}`}
+                    className={`rounded-full ${colorMap[color]}`}
+                    style={dotStyle}
                 ></div>
             </div>
         </div>
