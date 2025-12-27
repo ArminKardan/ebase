@@ -998,12 +998,6 @@ const Page: PageEl = (props: {} & { [key: string]: any }, refresh, getProps, onL
 
       <br-xx />
       <b-200 style={{ backgroundColor: "#748EC5" }}>
-        <f-12>تاریخ و زمان کامل (لوکال): </f-12> <sp-2 />
-        {ToLocaleDateTime(new Date())}
-      </b-200>
-
-      <br-xx />
-      <b-200 style={{ backgroundColor: "#748EC5" }}>
         <f-12>نشان بج مارک
           <sp-2 />
           <Badge verify="owner" /> <sp-2 />
@@ -1185,15 +1179,6 @@ const Page: PageEl = (props: {} & { [key: string]: any }, refresh, getProps, onL
           onwlink={() => { alerter("قابل ویرایش نیست") }}
         />
       </Window>
-
-
-      <br-xx />
-      <Window title='تکست باکس قیمت' contentStyle={{ minHeight: 100, padding: 10 }}>
-        <PriceTextBox fractions={1} title='لطفا مبلغ مورد نظر را وارد کنید' defaultValue={"100.26"} unit='تومان'
-          on={() => { }} explainstr='مراقب باشید' explain={"مراقبت"} readOnly lefticon={cdn("/files/ok.svg")} onlefticon={() => { }}
-          righttext={"hiiii"} />
-      </Window>
-
 
       <br-xx />
       <Window title='جست و جو' contentStyle={{ minHeight: 100, padding: 10 }}>
