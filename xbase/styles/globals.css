@@ -891,10 +891,10 @@ video::-webkit-media-controls {
 video::-webkit-media-controls-enclosure {
   visibility: visible;
 }
-
+/* 
 video::-webkit-media-controls-time-remaining-display,
 video::-webkit-media-controls-mute-button,
 video::-webkit-media-controls-fullscreen-button,
 video::-webkit-media-controls-current-time-display {
   display: none;
-}
+} */
