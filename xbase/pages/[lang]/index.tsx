@@ -19,7 +19,7 @@ const Page: PageEl = (
     <c-cc
       className="min-h-screen"
       style={{
-        backgroundImage: `url(/bg.webp)`,
+        backgroundImage: `url("https://cdn.qepal.com/qeupload/67532cc32ee878804e67a5f5/bgwebp-bsxdz0sqfoxyn6cb5vjxbqgvouuvhu.webp")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
